@@ -27,18 +27,17 @@
             <li><a class="" href="/newMagazine">Create new magazine</a></li>
           </ul>
         </li>
-        <li class="dropdown"><a class=" login" href="/u/{{ default_username }}"><span
-            class="user-name">{{ default_username }}</span></a>
+        <li v-if="estaLoguejat" class="dropdown">
+          <a class="login" href="/u/default_username">
+            <span class="user-name">default_username</span>
+          </a>
           <ul class="dropdown__menu">
-            <li><a href="/u/{{ default_username }}" class="">Profile</a></li>
-            <li><a href="/kbin/settings/profile/{{ default_username }}" class="">Settings</a></li>
-            <li><a href="/logout">Sing off</a></li>
+            <li><a href="/u/default_username" class="">Profile</a></li>
+            <li><a href="/kbin/settings/profile/default_username" class="">Settings</a></li>
+            <li><a href="/logout">Sign off</a></li>
           </ul>
         </li>
-        <!-- No s'ha iniciat la sessió -->
-        <a class="login" href="/accounts/google/login">
-          Log in
-        </a>
+        <a v-else class="login" href="https://bravo13-36a68ba47d34.herokuapp.com/accounts/google/login">Log in</a>
       </menu>
     </div>
   </header>
@@ -50,6 +49,7 @@
 export default {
   name: 'BarraBase',
   mounted() {
+    localStorage.setItem('authToken', 'c8ed0dc656349028d96091bb5486c7ba6477c2b8');
     this.updateDocument();
   },
   watch: {
@@ -58,6 +58,11 @@ export default {
   },
   props: {
     actiu:String
+  },
+  computed: {
+    estaLoguejat() {
+      return localStorage.getItem('authToken') !== null;
+    }
   },
   methods: {
     updateDocument() {
