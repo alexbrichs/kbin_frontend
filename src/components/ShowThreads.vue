@@ -15,19 +15,15 @@
       <a :href="`/magazine/${thread.magazine}`" class="magazine-inline" title={{magazineName}}>{{ magazineName }}</a>
     </aside>
     <aside class="vote">
-      <button @click="sendVote" title="Vots positius" aria-label="Vots positius">
+      <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
         <span data-subject-target="favCounter">{{ thread.num_likes }}</span>
         <span><i class="fa-solid fa-arrow-up"></i></span>
       </button>
 
-      <form action="/kbin/votar/8/" name="votar_thread" method="post" class="vote__down">
-        <input type="hidden" name="next" value="/">
-        <input type="hidden" name="keyword" value="">
-        <input type="hidden" name="vote_type" value="negatiu">
-        <button type="submit" title="Vots negatius" aria-label="Vots negatius">
-          <span data-subject-target="downvoteCounter">{{thread.num_dislikes}}</span> <span><i class="fa-solid fa-arrow-down"></i></span>
-        </button>
-      </form>
+      <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
+        <span data-subject-target="favCounter">{{ thread.num_dislikes }}</span>
+        <span><i class="fa-solid fa-arrow-down"></i></span>
+      </button>
     </aside>
     <footer>
       <menu>
@@ -103,24 +99,25 @@ export default {
         console.error('Error fetching magazine:', error);
       }
     },
-    async sendVote() {
+    async enviarVot(tipus) {
       try {
         // Obtener el token del localStorage
-        const userToken = localStorage.getItem('userToken');
+        const userToken = localStorage.getItem('authToken');
         if (!userToken) {
           throw new Error('No se encontró el token del usuario en el localStorage');
         }
 
         const response = await axios.post(
-          `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/like/`,
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${userToken}`
+            `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
+            {},
+            {
+              headers: {
+                Authorization: `${userToken}`
+              }
             }
-          }
         );
         console.log('Voto enviado correctamente:', response.data);
+        window.location.reload();
       } catch (error) {
         console.error('Error al enviar el voto:', error);
       }
