@@ -10,33 +10,29 @@
     </header>
     <aside class="meta entry__meta">
       <a class="user-inline" :href="`/u/${thread.author}`">{{ thread.author }}</a>
-      <time class="timeago" datetime="1 week ago">1 week ago</time>
+      <time class="timeago" :datetime="thread.creation_date">&nbsp;{{ tiempoDesdeCreacion(thread.creation_data) }}</time>
       <span> to </span>
-      <a href="/magazine/1" class="magazine-inline" title="Primera Magazine">Primera Magazine</a>
+      <a :href="`/magazine/${thread.magazine}`" class="magazine-inline" title={{magazineName}}>{{ magazineName }}</a>
     </aside>
     <aside class="vote">
-      <form action="/kbin/votar/8/" name="votar_thread" method="post" class="vote__up">
-        <input type="hidden" name="next" value="/">
-        <input type="hidden" name="keyword" value="">
-        <input type="hidden" name="vote_type" value="positiu">
-        <button type="submit" title="Vots positius" aria-label="Vots positius">
-          <span data-subject-target="favCounter">0</span>
-          <span><i class="fa-solid fa-arrow-up"></i></span>
-        </button>
-      </form>
+      <button @click="sendVote" title="Vots positius" aria-label="Vots positius">
+        <span data-subject-target="favCounter">{{ thread.num_likes }}</span>
+        <span><i class="fa-solid fa-arrow-up"></i></span>
+      </button>
+
       <form action="/kbin/votar/8/" name="votar_thread" method="post" class="vote__down">
         <input type="hidden" name="next" value="/">
         <input type="hidden" name="keyword" value="">
         <input type="hidden" name="vote_type" value="negatiu">
         <button type="submit" title="Vots negatius" aria-label="Vots negatius">
-          <span data-subject-target="downvoteCounter">0</span> <span><i class="fa-solid fa-arrow-down"></i></span>
+          <span data-subject-target="downvoteCounter">{{thread.num_dislikes}}</span> <span><i class="fa-solid fa-arrow-down"></i></span>
         </button>
       </form>
     </aside>
     <footer>
       <menu>
         <li>
-          <a class="stretched-link" href="/kbin/thread/8/top/"><span data-subject-target="commentsCounter">0</span>
+          <a class="stretched-link" href="/kbin/thread/8/top/"><span data-subject-target="commentsCounter">{{thread.num_coments}}</span>
             comments </a>
         </li>
         <li>
@@ -44,7 +40,6 @@
             <input type="hidden" name="next" value="/">
             <input type="hidden" name="keyword" value="">
             <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">boost
-
             </button>
           </form>
         </li>
@@ -57,18 +52,80 @@
 </template>
 
 <script>
+import axios from 'axios';
 export default {
   name: 'ShowThreads',
   props: {
     thread: Object,
   },
+  data() {
+    return {
+    magazineName:'asdf',
+    api:'https://bravo13-36a68ba47d34.herokuapp.com/api'
+      }
+  },
+  created() {
+    // Hacer la solicitud para obtener el nombre de la revista
+    this.getMagazineName(this.thread.magazine);
+  },
+  methods: {
+    tiempoDesdeCreacion(creationDate) {
+      const now = new Date();
+      const diff = now - new Date(creationDate);
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 365) {
+        const years = Math.floor(days / 365);
+        return `${years} ${years === 1 ? 'year' : 'years'} ago`;
+      } else if (days > 30) {
+        const months = Math.floor(days / 30);
+        return `${months} ${months === 1 ? 'month' : 'months'} ago`;
+      } else if (days > 7) {
+        const weeks = Math.floor(days / 7);
+        return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+      } else if (days > 0) {
+        return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+      } else if (hours > 0) {
+        return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
+      } else if (minutes > 0) {
+        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
+      } else {
+        return 'Now';
+      }
+    },
+    async getMagazineName(magazineId) {
+      try {
+        const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/magazine/${magazineId}`);
+        this.magazineName = response.data.name;
+      } catch (error) {
+        console.error('Error fetching magazine:', error);
+      }
+    },
+    async sendVote() {
+      try {
+        // Obtener el token del localStorage
+        const userToken = localStorage.getItem('userToken');
+        if (!userToken) {
+          throw new Error('No se encontró el token del usuario en el localStorage');
+        }
+
+        const response = await axios.post(
+          `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/like/`,
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${userToken}`
+            }
+          }
+        );
+        console.log('Voto enviado correctamente:', response.data);
+      } catch (error) {
+        console.error('Error al enviar el voto:', error);
+      }
+    }
+  }
 };
 </script>
 
-<style scoped>
-.thread {
-  border: 1px solid #ddd;
-  padding: 16px;
-  margin-bottom: 16px;
-}
-</style>
