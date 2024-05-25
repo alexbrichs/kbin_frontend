@@ -73,7 +73,7 @@ export default {
     },
     async fetchThreads() {
       try {
-        const response = await axios.get('https://bravo13-36a68ba47d34.herokuapp.com/api/llistar/threads/newest/');
+        const response = await axios.get('https://bravo13-36a68ba47d34.herokuapp.com/api/llistar/publicacions/newest/');
         this.threads = response.data;
       } catch (error) {
         console.error('Error fetching threads:', error);
