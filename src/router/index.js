@@ -18,7 +18,7 @@ const routes = [
         props: true
     },
     {
-        path: '/cercador/:activeFilter/:activeOption/',
+        path: '/cercador/:activeOption/:activeFilter',
         name: 'CercadorThreads',
         component: CercadorThreads
     },
