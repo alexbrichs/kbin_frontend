@@ -3,9 +3,10 @@ import UserProfile from "../components/UserProfile.vue";
 
 const routes = [
     {
-        path: '/u/',
+        path: '/u/:username/',
         name: 'UserProfile',
         component: UserProfile,
+        props: true
     },
 ]
 

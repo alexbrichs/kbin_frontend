@@ -104,27 +104,40 @@
 import axios from "axios";
 export default {
   name: 'UserProfile',
+  props: ['username'],
   data() {
     return {
       user: {}
     };
   },
   mounted() {
-    this.fetchMagazines();
-
-
+    this.fetchUser();
   },
   methods: {
-    async fetchMagazines() {
+    async fetchUser() {
       try {
-        const response = await axios.get('https://bravo13-36a68ba47d34.herokuapp.com/api/u/daniel.canizares/');
+        const apiKey = await this.getKey();
+        const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/u/${this.username}/`, {
+          headers: {
+            'Authorization': `${apiKey}`
+          }
+        });
         this.user = response.data;
         console.log(this.user);
       } catch (error) {
-        console.error('Error fetching threads:', error);
+        console.error('Error fetching user:', error);
       }
     },
-
+    async getKey() {
+      try {
+        const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/users/`);
+        const user = response.data.find(user => user.username === this.username);
+        return user ? user.token : null;
+      } catch (error) {
+        console.error('Error fetching API key:', error);
+        return null; // Retorna null en caso de error
+      }
+    }
   }
 }
 </script>
