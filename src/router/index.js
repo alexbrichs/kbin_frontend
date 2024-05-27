@@ -1,6 +1,8 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import HomePage from "../components/HomePage.vue";
-import ShowDetallThread from "../components/ShowDetallThread.vue";
+import HomePage from '../components/HomePage.vue'
+import ShowDetallThread from "@/components/ShowDetallThread.vue";
+import '/public/assets/css/app.910c0aab.css';
+import '/public/assets/css/824.b4cc3385.css';
 
 const routes = [
     {
