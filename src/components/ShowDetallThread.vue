@@ -4,7 +4,7 @@
       <div class="kbin-container">
         <main id="main" data-controller="lightbox timeago" class="">
           <div id="content">
-            <article class="entry section entry--single section--top">
+            <article :class="articleClass">
               <header>
                 <h1>
                   <a rel="nofollow noopener noreferrer" :href="`/kbin/thread/${thread.id}/top/`">{{ thread.title }}</a>
@@ -59,6 +59,22 @@
                     </form>
                   </li>
 
+                  <template v-if="postMeu">
+                    <li>
+                      <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
+                        <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
+                        </button>
+                      </form>
+                    </li>
+                    <li>
+                      <form :action="`/kbin/eliminar/${thread.id}/`" name="eliminar_publicacio" method="post">
+                        <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">delete
+                        </button>
+                      </form>
+                    </li>
+                  </template>
+
+
                 </menu>
                 <div data-subject-target="container" class="js-container">
                 </div>
@@ -83,7 +99,8 @@ export default {
     return {
       magazineName: '',
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
-      thread: {}
+      thread: {},
+      postMeu: false
     }
   },
   async created() {
@@ -92,8 +109,17 @@ export default {
       this.thread = response.data;
       await this.getMagazineName(this.thread.magazine);
       document.title = `${this.thread.title} - ${this.magazineName} - kbin.social`;
+      this.postMeu = await this.espublicaciomeva();
     } catch (error) {
       console.error('Error al obtener los detalles del hilo:', error);
+    }
+  },
+  computed: {
+    articleClass() {
+      return {
+        'entry section entry--single section --top': true,
+        'subject own': this.postMeu // Añadir la clase 'own' si es mi publicación
+      };
     }
   },
   methods: {
@@ -153,6 +179,19 @@ export default {
       } catch (error) {
         console.error('Error al enviar el voto:', error);
       }
+    },
+    async espublicaciomeva() {
+      const userToken = localStorage.getItem('authToken');
+      const response = await axios.get(
+          `${this.api}/u/${this.thread.author}/threads/newest/threads/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      );
+      const token_thread = response.data.user.token;
+      return userToken === token_thread;
     }
   }
 };
