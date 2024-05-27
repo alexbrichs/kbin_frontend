@@ -27,7 +27,6 @@
             <li><a class="" href="/newMagazine">Create new magazine</a></li>
           </ul>
         </li>
-
         <li v-if="estaLoguejat" class="dropdown">
           <a class="login" href="/u/default_username">
             <span class="user-name">default_username</span>
@@ -50,6 +49,7 @@
 export default {
   name: 'BarraBase',
   mounted() {
+    localStorage.setItem('authToken', 'c8ed0dc656349028d96091bb5486c7ba6477c2b8');
     this.updateDocument();
   },
   watch: {

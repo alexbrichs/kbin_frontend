@@ -2,7 +2,7 @@
   <article class="entry section subject">
     <header>
       <h1>
-        <a rel="nofollow noopener noreferrer" :href="`/kbin/thread/${thread.id}/top/`">{{ thread.title }}</a>
+        <a rel="nofollow noopener noreferrer" :href="`/thread/${thread.id}/top/`">{{ thread.title }}</a>
         <span class="entry__domain" v-if="thread.url">
           &nbsp;(<a :href="thread.url" target="_blank">{{ thread.url }}</a> )
         </span>
@@ -17,11 +17,13 @@
     <aside class="vote">
       <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
         <span data-subject-target="favCounter">{{ thread.num_likes }}</span>
+        <span>&nbsp;</span>
         <span><i class="fa-solid fa-arrow-up"></i></span>
       </button>
 
       <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
         <span data-subject-target="favCounter">{{ thread.num_dislikes }}</span>
+        <span>&nbsp;</span>
         <span><i class="fa-solid fa-arrow-down"></i></span>
       </button>
     </aside>
@@ -125,4 +127,3 @@ export default {
   }
 };
 </script>
-
