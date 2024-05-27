@@ -15,7 +15,6 @@ const routes = [
         name: 'ShowDetallThread',
         component: ShowDetallThread,
         props: true
-
     }
 ]
 
