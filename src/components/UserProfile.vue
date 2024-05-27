@@ -1,33 +1,102 @@
 <template>
   <body class="theme--light" data-controller="kbin notifications" data-turbo="false">
-    <div id="middle" class="page-user page-user-overview">
-      <div class="kbin-container">
-        <main id="main" data-controller="lightbox timeago" class="">
-          <div class="section">
-            <div class="user-box">
+  <div id="middle" class="page-user page-user-overview">
+    <div class="kbin-container">
+      <main id="main" data-controller="lightbox timeago" class="">
+        <div class="section">
+          <div class="user-box">
+            <div v-if="user.cover && user.avatar" class="with-cover with-avatar">
+              <img v-if="user.cover" height="200" width="100%" class="cover" :src="user.cover" :alt="`@${user.username}@kbin.social`">
+              <div class="user-main" id="content">
+                <div>
+                  <div class="row">
+                    <figure>
+                      <img v-if="user.avatar" width="100" height="100" style="max-width: 100px; max-height: 100px;"
+                           :src="user.avatar" :alt="`@${user.username}@kbin.social`">
+                    </figure>
+                    <h1>{{ user.username }}</h1>
+                    <small>@{{ user.username }}@kbin.social</small>
+                    <small v-if="user.email === user.email">{{ user.token }}</small>
+                  </div>
+                </div>
+              </div>
+              <div v-if="user.description" class="about">
+                <div class="content">
+                  <p>{{ user.description }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-else-if="user.cover !== ''" class="with-cover">
+              <img v-if="user.cover" height="200" width="100%" class="cover" :src="user.cover" :alt="`@${user.username}@kbin.social`">
+              <div class="user-main" id="content">
+                <div>
+                  <div class="row">
+                    <figure>
+                      <img v-if="user.avatar" width="100" height="100" style="max-width: 100px; max-height: 100px;"
+                           :src="user.avatar" :alt="`@${user.username}@kbin.social`">
+                    </figure>
+                    <h1>{{ user.username }}</h1>
+                    <small>@{{ user.username }}@kbin.social</small>
+                    <small v-if="user.email === user.email">{{ user.token }}</small>
+                  </div>
+                </div>
+              </div>
+              <div v-if="user.description" class="about">
+                <div class="content">
+                  <p>{{ user.description }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-else-if="user.avatar" class="with-avatar">
+              <img v-if="user.cover" height="200" width="100%" class="cover" :src="user.cover" :alt="`@${user.username}@kbin.social`">
+              <div class="user-main" id="content">
+                <div>
+                  <div class="row">
+                    <figure>
+                      <img v-if="user.avatar" width="100" height="100" style="max-width: 100px; max-height: 100px;"
+                           :src="user.avatar" :alt="`@${user.username}@kbin.social`">
+                    </figure>
+                    <h1>{{ user.username }}</h1>
+                    <small>@{{ user.username }}@kbin.social</small>
+                    <small v-if="user.email === user.email">{{ user.token }}</small>
+                  </div>
+                </div>
+              </div>
+              <div v-if="user.description" class="about">
+                <div class="content">
+                  <p>{{ user.description }}</p>
+                </div>
+              </div>
+            </div>
+            <div v-else>
               <div class="">
+                <img v-if="user.cover" height="200" width="100%" class="cover" :src="user.cover" :alt="`@${user.username}@kbin.social`">
                 <div class="user-main" id="content">
                   <div>
                     <div class="row">
+                      <figure>
+                      <img v-if="user.avatar" width="100" height="100" style="max-width: 100px; max-height: 100px;"
+                           :src="user.avatar" :alt="`@${user.username}@kbin.social`">
+                      </figure>
                       <h1>{{ user.username }}</h1>
                       <small>@{{ user.username }}@kbin.social</small>
                       <small>{{ user.token }}</small>
+                      <small v-if="user.email === user.email">{{ user.token }}</small>
                     </div>
                   </div>
                 </div>
-
-              <header id="header" class="header">
-                <div class="kbin-container">
-                  <p>Hola, {{ user.username }}</p>
+                <div v-if="user.description" class="about">
+                <div class="content">
+                  <p>{{ user.description }}</p>
                 </div>
-              </header>
-
+              </div>
               </div>
             </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
+  </div>
   </body>
 </template>
 
