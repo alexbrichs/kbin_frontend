@@ -66,6 +66,7 @@ export default {
   },
   methods: {
     updateDocument() {
+      localStorage.setItem('authToken', "c8ed0dc656349028d96091bb5486c7ba6477c2b8");
       // Lógica condicional para establecer el título del documento según la ruta actual
       if (this.$route && this.$route.path) {
         if (this.$route.path === '/') {
