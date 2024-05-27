@@ -16,7 +16,7 @@
                     </figure>
                     <h1>{{ user.username }}</h1>
                     <small>@{{ user.username }}@kbin.social</small>
-                    <small v-if="user.email === user.email">{{ user.token }}</small>
+                    <small v-if="user.token !== null">{{ user.token }}</small>
                   </div>
                 </div>
               </div>
@@ -37,7 +37,7 @@
                     </figure>
                     <h1>{{ user.username }}</h1>
                     <small>@{{ user.username }}@kbin.social</small>
-                    <small v-if="user.email === user.email">{{ user.token }}</small>
+                    <small v-if="user.token !== null">{{ user.token }}</small>
                   </div>
                 </div>
               </div>
@@ -58,7 +58,7 @@
                     </figure>
                     <h1>{{ user.username }}</h1>
                     <small>@{{ user.username }}@kbin.social</small>
-                    <small v-if="user.email === user.email">{{ user.token }}</small>
+                    <small v-if="user.token !== null">{{ user.token }}</small>
                   </div>
                 </div>
               </div>
@@ -81,7 +81,7 @@
                       <h1>{{ user.username }}</h1>
                       <small>@{{ user.username }}@kbin.social</small>
                       <small>{{ user.token }}</small>
-                      <small v-if="user.email === user.email">{{ user.token }}</small>
+                      <small v-if="user.token !== null">{{ user.token }}</small>
                     </div>
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export default {
   props: ['username'],
   data() {
     return {
-      user: {}
+      user: {},
     };
   },
   mounted() {
@@ -116,7 +116,8 @@ export default {
   methods: {
     async fetchUser() {
       try {
-        const apiKey = await this.getKey();
+        // const apiKey = await this.getKey();
+        const apiKey = localStorage.getItem('authToken');
         const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/u/${this.username}/`, {
           headers: {
             'Authorization': `${apiKey}`
@@ -128,6 +129,7 @@ export default {
         console.error('Error fetching user:', error);
       }
     },
+    /*
     async getKey() {
       try {
         const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/users/`);
@@ -138,6 +140,7 @@ export default {
         return null; // Retorna null en caso de error
       }
     }
+    */
   }
 }
 </script>
