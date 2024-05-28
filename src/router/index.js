@@ -12,6 +12,11 @@ const routes = [
         component: HomePage
     },
     {
+        path: '/:activeOption/:activeFilter',
+        name: 'HomePage1',
+        component: HomePage
+    },
+    {
         path: '/thread/:id/top/',
         name: 'ShowDetallThread',
         component: ShowDetallThread,

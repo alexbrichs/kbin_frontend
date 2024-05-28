@@ -51,30 +51,34 @@ export default {
       activeOption: 'newest',
       activeFilter: 'tot',
       threads:[],
+      api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
     }
   },
   mounted() {
-    this.updateDocumentTitle();
+    const {activeFilter, activeOption} = this.$route.params;
+    if (activeFilter) {
+      this.activeFilter = activeFilter;
+    }
+    if (activeOption) {
+      this.activeOption = activeOption;
+    }
     this.fetchThreads();
   },
-  watch: {
-    '$route.path': 'updateDocumentTitle'
-  },
   methods: {
-    updateDocumentTitle() {
-      if (this.$route && this.$route.path) {
-        if (this.$route.path === '/') {
-          document.title = 'kbin.social - Explore the Fediverse';
-        }
-        if (this.$route.path.startsWith('/newest/')) {
-          this.activeOption = 'newest';
-        }
-      }
-    },
     async fetchThreads() {
       try {
-        const response = await axios.get('https://bravo13-36a68ba47d34.herokuapp.com/api/llistar/publicacions/newest/');
-        this.threads = response.data;
+        if (this.activeFilter === 'tot') {
+          const response = await axios.get(`${this.api}/llistar/publicacions/${this.activeOption}/`);
+          this.threads = response.data;
+        }
+        else if (this.activeFilter === 'links') {
+          const response = await axios.get(`${this.api}/llistar/links/${this.activeOption}/`);
+          this.threads = response.data;
+        }
+        else if (this.activeFilter === 'threads') {
+          const response = await axios.get(`${this.api}/llistar/threads/${this.activeOption}/`);
+          this.threads = response.data;
+        }
       } catch (error) {
         console.error('Error fetching threads:', error);
       }
