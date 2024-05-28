@@ -73,6 +73,10 @@ export default {
           document.title = 'kbin.social - Explore the Fediverse';
           this.$emit('update:actiu', 'threads');
         }
+        else if(this.$route.path.startsWith('/cercador')){
+          document.title = 'Search kbin.social';
+          this.$emit('update:actiu', '');
+        }
       }
     }
   }
