@@ -8,7 +8,7 @@
         </div>
         <menu class="head-nav__menu">
           <li></li>
-          <li> <a href="/" :class="{ active: actiu === 'threads' }">Threads</a></li>
+          <li><a href="/" :class="{ active: actiu === 'threads' }">Threads</a></li>
           <li><a href="/magazines" :class="{ active: actiu === 'magazines' }">Magazines</a></li>
         </menu>
       </nav>
@@ -57,7 +57,7 @@ export default {
     '$route': 'updateDocument'
   },
   props: {
-    actiu:String
+    actiu: String
   },
   computed: {
     estaLoguejat() {
@@ -66,13 +66,13 @@ export default {
   },
   methods: {
     updateDocument() {
-      // Lógica condicional para establecer el título del documento según la ruta actual
+      // Titol document segons ruta actual
       if (this.$route && this.$route.path) {
-        if (this.$route.path === '/') {
+        if (this.$route.path === '/' || this.$route.path.startsWith('/top') || this.$route.path.startsWith('/newest')
+            || this.$route.path.startsWith('/commented')) {
           document.title = 'kbin.social - Explore the Fediverse';
           this.$emit('update:actiu', 'threads');
-        }
-        else if(this.$route.path.startsWith('/cercador')){
+        } else if (this.$route.path.startsWith('/cercador')) {
           document.title = 'Search kbin.social';
           this.$emit('update:actiu', '');
         }
