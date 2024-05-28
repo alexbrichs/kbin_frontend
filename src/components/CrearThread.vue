@@ -6,7 +6,12 @@
           <BarraNew actiu="thread">
             <div id="content" class="section">
               <div class="container" v-entry-link-create>
+
                 <form @submit.prevent="submitForm" class="entry-create" enctype="multipart/form-data">
+                  <div v-if="$route.path.startsWith('/new/link')">
+                      <label for="entry_link_url" class="required">URL</label>
+                      <input type="text" id="entry_link_url" name="url" required="required" inputmode="url" v-model="url">
+                    </div>
                   <div>
                     <label for="entry_link_title" class="required">Title</label>
                     <textarea id="entry_link_title" v-model="title" required data-input-length-max-value="255"
@@ -59,6 +64,7 @@ export default {
       title: '',
       body: null,
       selectedMagazine: '',  //ID magazine seleccionada
+      url: null,
       magazines: [],
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',  // URL de la API
     };
@@ -74,19 +80,39 @@ export default {
     },
     async submitForm() {
       const userToken = localStorage.getItem('authToken');
-      await axios.post(`${this.api}/threads/`,
-          {
-            "title": this.title,
-            "body": this.body,
-            "magazine": this.selectedMagazine
-          },
-          {
-            headers: {
-              Authorization: `${userToken}`
-            }
-          })
-      this.$router.push('/');
+      if (this.$route && this.$route.path) {
+        if (this.$route.path.startsWith('/new/thread')) {
+          await axios.post(`${this.api}/threads/`,
+              {
+                "title": this.title,
+                "body": this.body,
+                "magazine": this.selectedMagazine
+              },
+              {
+                headers: {
+                  Authorization: `${userToken}`
+                }
+              })
+          this.$router.push('/');
+        } else if (this.$route.path.startsWith('/new/link')) {
+          await axios.post(`${this.api}/links/`,
+              {
+                "title": this.title,
+                "body": this.body,
+                "url": this.url,
+                "magazine": this.selectedMagazine
+              },
+              {
+                headers: {
+                  Authorization: `${userToken}`
+                }
+              })
+          this.$router.push('/');
+        }
+      }
     }
+
+
   }
 };
 </script>

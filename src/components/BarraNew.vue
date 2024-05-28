@@ -5,13 +5,13 @@
     </div>
     <menu class="options__main">
       <li>
-        <a href="/new" :class="{ active: actiu === 'link' }">link</a>
+        <a href="/new/link" :class="{ active: $route.path.startsWith('/new/link') }">link</a>
       </li>
       <li>
-        <a href="/new/thread" :class="{ active: actiu === 'thread' }">thread</a>
+        <a href="/new/thread" :class="{ active: $route.path.startsWith('/new/thread') }">thread</a>
       </li>
       <li>
-        <a href="/newMagazine" :class="{ active: actiu === 'magazine' }">magazine</a>
+        <a href="/newMagazine" :class="{ active: $route.path.startsWith('/newMagazine') }">magazine</a>
       </li>
     </menu>
   </aside>

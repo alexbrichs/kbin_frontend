@@ -37,6 +37,11 @@ const routes = [
         path: '/new/thread/',
         name: 'CrearThread',
         component: CrearThread
+    },
+    {
+        path: '/new/link/',
+        name: 'CrearLink',
+        component: CrearThread
     }
 
 ]
