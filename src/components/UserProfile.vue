@@ -1,5 +1,6 @@
 <template>
   <body class="theme--light" data-controller="kbin notifications" data-turbo="false">
+  <BarraBase v-model:actiu="actiu">
   <div id="middle" class="page-user page-user-overview">
     <div class="kbin-container">
       <main id="main" data-controller="lightbox timeago" class="">
@@ -97,17 +98,21 @@
       </main>
     </div>
   </div>
+  </BarraBase>
   </body>
 </template>
 
 <script>
 import axios from "axios";
+import BarraBase from "@/components/BarraBase.vue";
 export default {
   name: 'UserProfile',
+  components: {BarraBase},
   props: ['username'],
   data() {
     return {
       user: {},
+      actiu: 'actiu',
     };
   },
   mounted() {
