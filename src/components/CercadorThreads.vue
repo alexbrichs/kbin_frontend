@@ -20,9 +20,9 @@
             <aside class="options options--top" id="options">
               <div></div>
               <menu class="options__main no-scroll">
-                <li><a :class="{ active: activeOption === 'top' }" :href="`/cercador/top/tot?keyword=${keyword}`">Top</a></li>
-                <li><a :class="{ active: activeOption === 'newest' }" :href="`/cercador/newest/tot?keyword=${keyword}`">Newest</a></li>
-                <li><a :class="{ active: activeOption === 'commented' }" :href="`/cercador/commented/tot?keyword=${keyword}`">Commented</a></li>
+                <li><a :class="{ active: activeOption === 'top' }" :href="'/cercador/top/' + activeFilter + '/' + (keyword !== '' ? '?keyword=' + keyword : '')">Top</a></li>
+                <li><a :class="{ active: activeOption === 'newest' }" :href="'/cercador/newest/' + activeFilter + '/' + (keyword !== '' ? '?keyword=' + keyword : '')">Newest</a></li>
+                <li><a :class="{ active: activeOption === 'commented' }" :href="'/cercador/commented/' + activeFilter + '/' + (keyword !== '' ? '?keyword=' + keyword : '')">Commented</a></li>
               </menu>
               <menu class="options__filters">
                 <li class="dropdown">
