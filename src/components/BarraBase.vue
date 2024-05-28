@@ -19,10 +19,10 @@
           </a>
         </li>
 
-        <li class="dropdown"><a href="/new" class="icon" aria-label="Add" title="Add"><i
+        <li class="dropdown"><a href="/new/link" class="icon" aria-label="Add" title="Add"><i
             class="fa-solid fa-plus"></i> Add</a>
           <ul class="dropdown__menu">
-            <li><a href="/new" class="">Add new link</a></li>
+            <li><a href="/new/link" class="">Add new link</a></li>
             <li><a href="/new/thread" class="">Add new thread</a></li>
             <li><a class="" href="/newMagazine">Create new magazine</a></li>
           </ul>
@@ -77,6 +77,9 @@ export default {
           this.$emit('update:actiu', '');
         } else if (this.$route.path.startsWith('/new/thread')) {
           document.title = 'Add new thread - kbin.social';
+          this.$emit('update:actiu', '');
+        } else if (this.$route.path.startsWith('/new/link')) {
+          document.title = 'Add new link   - kbin.social';
           this.$emit('update:actiu', '');
         }
       }

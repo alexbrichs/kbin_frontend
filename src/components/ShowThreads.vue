@@ -4,7 +4,7 @@
       <h1>
         <a rel="nofollow noopener noreferrer" :href="`/thread/${thread.id}/top/`">{{ thread.title }}</a>
         <span class="entry__domain" v-if="thread.url">
-          &nbsp;(<a :href="thread.url" target="_blank">{{ thread.url }}</a> )
+          &nbsp;(<a :href="'//'+thread.url" target="_blank">{{ thread.url }}</a> )
         </span>
       </h1>
     </header>
