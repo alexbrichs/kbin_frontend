@@ -3,7 +3,7 @@ import HomePage from '../components/HomePage.vue'
 import ShowDetallThread from "@/components/ShowDetallThread.vue";
 import CercadorThreads from "@/components/CercadorThreads.vue";
 import UserProfile from "../components/UserProfile.vue";
-
+import CrearThread from "@/components/CrearThread.vue";
 import '/public/assets/css/app.910c0aab.css';
 import '/public/assets/css/824.b4cc3385.css';
 
@@ -34,6 +34,11 @@ const routes = [
         name: 'CercadorThreads1',
         component: CercadorThreads
     },
+    {
+        path: '/new/thread/',
+        name: 'CrearThread',
+        component: CrearThread
+    }
 ]
 const user_routes = [
     {

@@ -73,13 +73,40 @@
                       </form>
                     </li>
                   </template>
-
-
                 </menu>
                 <div data-subject-target="container" class="js-container">
                 </div>
               </footer>
             </article>
+            <div id="comment-add" class="section">
+              <h3 hidden="">Añadir un comentario</h3>
+              <form name="entry_comment" method="post" action=""
+                    class="comment-add" enctype="multipart/form-data">
+                <div><label for="entry_comment_6616cdb65f3850.74137319_body"></label><textarea
+                    id="entry_comment_6616cdb65f3850.74137319_body" name="entry_comment[body]"
+                    data-controller="input-length rich-textarea autogrow"
+                    data-action="input-length#updateDisplay" data-input-length-max-value="5000"
+                    style="overflow: hidden; height: 66px;"></textarea>
+                </div>
+                <div class="row actions">
+                  <ul>
+                    <li class="dropdown">
+                      <div>
+                        <button type="submit" id="entry_comment_6616cdb65f3850.74137319_submit"
+                                name="entry_comment[submit]" class="btn btn__primary"
+                                data-action="subject#sendForm">Add comment
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </form>
+            </div>
+            <section id="comments" class="comments entry-comments comments-tree show-comment-avatar"
+                     data-controller="subject-list comments-wrap"
+                     data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
+              <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"/>
+            </section>
           </div>
         </main>
       </div>
@@ -90,18 +117,24 @@
 <script>
 import axios from 'axios';
 import BarraBase from "@/components/BarraBase.vue";
+import ShowComments from "@/components/ShowComments.vue";
 
 export default {
   name: 'ShowDetallThread',
-  components: {BarraBase},
+  components: {ShowComments, BarraBase},
   props: ['id'],
   data() {
     return {
       magazineName: '',
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
       thread: {},
-      postMeu: false
+      postMeu: false,
+      comments: [],
+      order: 'newest'
     }
+  },
+  mounted() {
+    this.getComments();
   },
   async created() {
     try {
@@ -192,7 +225,15 @@ export default {
       );
       const token_thread = response.data.user.token;
       return userToken === token_thread;
-    }
+    },
+    async getComments() {
+      try {
+        const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/${this.id}/comments/top`);
+        this.comments = response.data;
+      } catch (error) {
+        console.error('Error fetching comments:', error);
+      }
+    },
   }
 };
 </script>

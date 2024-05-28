@@ -75,6 +75,9 @@ export default {
         } else if (this.$route.path.startsWith('/cercador')) {
           document.title = 'Search kbin.social';
           this.$emit('update:actiu', '');
+        } else if (this.$route.path.startsWith('/new/thread')) {
+          document.title = 'Add new thread - kbin.social';
+          this.$emit('update:actiu', '');
         }
       }
     }
