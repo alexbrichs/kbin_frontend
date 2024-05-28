@@ -8,7 +8,7 @@
         </div>
         <menu class="head-nav__menu">
           <li></li>
-          <li> <a href="/" :class="{ active: actiu === 'threads' }">Threads</a></li>
+          <li><a href="/" :class="{ active: actiu === 'threads' }">Threads</a></li>
           <li><a href="/magazines" :class="{ active: actiu === 'magazines' }">Magazines</a></li>
         </menu>
       </nav>
@@ -27,7 +27,6 @@
             <li><a class="" href="/newMagazine">Create new magazine</a></li>
           </ul>
         </li>
-
         <li v-if="estaLoguejat" class="dropdown">
           <a class="login" href="/u/default_username">
             <span class="user-name">default_username</span>
@@ -50,6 +49,7 @@
 export default {
   name: 'BarraBase',
   mounted() {
+    localStorage.setItem('authToken', 'c8ed0dc656349028d96091bb5486c7ba6477c2b8');
     this.updateDocument();
   },
   watch: {
@@ -57,7 +57,7 @@ export default {
     '$route': 'updateDocument'
   },
   props: {
-    actiu:String
+    actiu: String
   },
   computed: {
     estaLoguejat() {
@@ -66,12 +66,15 @@ export default {
   },
   methods: {
     updateDocument() {
-      localStorage.setItem('authToken', "c8ed0dc656349028d96091bb5486c7ba6477c2b8");
-      // Lógica condicional para establecer el título del documento según la ruta actual
+      // Titol document segons ruta actual
       if (this.$route && this.$route.path) {
-        if (this.$route.path === '/') {
+        if (this.$route.path === '/' || this.$route.path.startsWith('/top') || this.$route.path.startsWith('/newest')
+            || this.$route.path.startsWith('/commented')) {
           document.title = 'kbin.social - Explore the Fediverse';
           this.$emit('update:actiu', 'threads');
+        } else if (this.$route.path.startsWith('/cercador')) {
+          document.title = 'Search kbin.social';
+          this.$emit('update:actiu', '');
         }
       }
     }

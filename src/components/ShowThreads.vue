@@ -1,8 +1,8 @@
 <template>
-  <article class="entry section subject">
+   <article :class="articleClass">
     <header>
       <h1>
-        <a rel="nofollow noopener noreferrer" :href="`/kbin/thread/${thread.id}/top/`">{{ thread.title }}</a>
+        <a rel="nofollow noopener noreferrer" :href="`/thread/${thread.id}/top/`">{{ thread.title }}</a>
         <span class="entry__domain" v-if="thread.url">
           &nbsp;(<a :href="thread.url" target="_blank">{{ thread.url }}</a> )
         </span>
@@ -10,25 +10,31 @@
     </header>
     <aside class="meta entry__meta">
       <a class="user-inline" :href="`/u/${thread.author}`">{{ thread.author }}</a>
-      <time class="timeago" :datetime="thread.creation_date">&nbsp;{{ tiempoDesdeCreacion(thread.creation_data) }}</time>
+      <time class="timeago" :datetime="thread.creation_date">&nbsp;{{
+          tiempoDesdeCreacion(thread.creation_data)
+        }}
+      </time>
       <span> to </span>
       <a :href="`/magazine/${thread.magazine}`" class="magazine-inline" title={{magazineName}}>{{ magazineName }}</a>
     </aside>
     <aside class="vote">
       <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
         <span data-subject-target="favCounter">{{ thread.num_likes }}</span>
+        <span>&nbsp;</span>
         <span><i class="fa-solid fa-arrow-up"></i></span>
       </button>
 
       <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
         <span data-subject-target="favCounter">{{ thread.num_dislikes }}</span>
+        <span>&nbsp;</span>
         <span><i class="fa-solid fa-arrow-down"></i></span>
       </button>
     </aside>
     <footer>
       <menu>
         <li>
-          <a class="stretched-link" href="/kbin/thread/8/top/"><span data-subject-target="commentsCounter">{{thread.num_coments}}</span>
+          <a class="stretched-link" href="/kbin/thread/8/top/"><span
+              data-subject-target="commentsCounter">{{ thread.num_coments }}</span>
             comments </a>
         </li>
         <li>
@@ -40,6 +46,21 @@
           </form>
         </li>
 
+        <template v-if="postMeu">
+          <li>
+            <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
+              <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
+              </button>
+            </form>
+          </li>
+          <li>
+            <form :action="`/kbin/eliminar/${thread.id}/`" name="eliminar_publicacio" method="post">
+              <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">delete
+              </button>
+            </form>
+          </li>
+        </template>
+
       </menu>
       <div data-subject-target="container" class="js-container">
       </div>
@@ -49,6 +70,7 @@
 
 <script>
 import axios from 'axios';
+
 export default {
   name: 'ShowThreads',
   props: {
@@ -56,13 +78,22 @@ export default {
   },
   data() {
     return {
-    magazineName:'asdf',
-    api:'https://bravo13-36a68ba47d34.herokuapp.com/api'
-      }
+      magazineName: 'asdf',
+      api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
+      postMeu: false
+    }
   },
-  created() {
-    // Hacer la solicitud para obtener el nombre de la revista
+  async created() {
     this.getMagazineName(this.thread.magazine);
+    this.postMeu = await this.espublicaciomeva();
+  },
+  computed: {
+    articleClass() {
+      return {
+        'entry section entry--single section --top': true,
+        'subject own': this.postMeu
+      };
+    }
   },
   methods: {
     tiempoDesdeCreacion(creationDate) {
@@ -121,8 +152,20 @@ export default {
       } catch (error) {
         console.error('Error al enviar el voto:', error);
       }
+    },
+    async espublicaciomeva() {
+      const userToken = localStorage.getItem('authToken');
+      const response = await axios.get(
+          `${this.api}/u/${this.thread.author}/threads/newest/threads/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      );
+      const token_thread = response.data.user.token;
+      return userToken === token_thread;
     }
   }
 };
 </script>
-
