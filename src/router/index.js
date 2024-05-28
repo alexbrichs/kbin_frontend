@@ -34,18 +34,22 @@ const routes = [
         name: 'CercadorThreads1',
         component: CercadorThreads
     },
+]
+const user_routes = [
     {
         path: '/u/:username/',
         name: 'UserProfile',
         component: UserProfile,
         props: true
     },
-
 ]
+
+// Combinar les rutes
+const combinedRoutes = [...routes, ...user_routes];
 
 const router = createRouter({
     history: createWebHistory(),
-    routes
+    routes: combinedRoutes,
 })
 
 export default router
