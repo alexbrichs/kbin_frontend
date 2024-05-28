@@ -48,8 +48,8 @@ export default {
   data() {
     return {
       actiu: '',
-      activeOption: 'newest',  // Valor inicial predeterminado
-      activeFilter: 'tot',      // Valor inicial predeterminado
+      activeOption: 'newest',
+      activeFilter: 'tot',
       threads:[],
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
     }

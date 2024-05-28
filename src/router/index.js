@@ -32,7 +32,6 @@ const routes = [
         name: 'CercadorThreads1',
         component: CercadorThreads
     }
-
 ]
 
 const router = createRouter({
