@@ -7,9 +7,9 @@
             <article :class="articleClass">
               <header>
                 <h1>
-                  <a rel="nofollow noopener noreferrer" :href="`/kbin/thread/${thread.id}/top/`">{{ thread.title }}</a>
+                  <a rel="nofollow noopener noreferrer" :href="`/thread/${thread.id}/top/`">{{ thread.title }}</a>
                   <span class="entry__domain" v-if="thread.url">
-          &nbsp;(<a :href="thread.url" target="_blank">{{ thread.url }}</a> )
+          &nbsp;(<a :href="'//'+thread.url" target="_blank">{{ thread.url }}</a> )
         </span>
                 </h1>
               </header>
@@ -67,10 +67,10 @@
                       </form>
                     </li>
                     <li>
-                      <form :action="`/kbin/eliminar/${thread.id}/`" name="eliminar_publicacio" method="post">
-                        <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">delete
-                        </button>
-                      </form>
+                      <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
+                              @click.prevent="EliminarPublicacio(thread.id)">
+                        delete
+                      </button>
                     </li>
                   </template>
                 </menu>
@@ -181,6 +181,19 @@ export default {
       } else {
         return 'Now';
       }
+    },
+    async EliminarPublicacio(id) {
+      const userToken = localStorage.getItem('authToken');
+      await axios.delete(
+          `${this.api}/publicacions/${id}/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      );
+      localStorage.setItem('eliminat', 'true');
+      this.$router.push('/');
     },
     async getMagazineName(magazineId) {
       try {
