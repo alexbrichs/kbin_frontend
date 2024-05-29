@@ -65,7 +65,7 @@
 
                     <template v-if="postMeu">
                       <li>
-                        <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
+                        <form :action="`/editar/publicacio/${thread.id}/`" name="edit_thread" method="get">
                           <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
                           </button>
                         </form>

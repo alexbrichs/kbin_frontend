@@ -54,7 +54,7 @@
 
         <template v-if="postMeu">
           <li>
-            <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
+            <form :action="`/editar/publicacio/${thread.id}/`" name="edit_thread" method="get">
               <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
               </button>
             </form>
@@ -97,6 +97,8 @@ export default {
     }
   },
   async created() {
+    console.log("info thread")
+    console.log(this.thread);
     this.getMagazineName(this.thread.magazine);
     this.postMeu = await this.espublicaciomeva();
     this.boosted = await this.esboosted();
@@ -140,6 +142,7 @@ export default {
     },
     async getMagazineName(magazineId) {
       try {
+        console.log(magazineId)
         const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/magazine/${magazineId}`);
         this.magazineName = response.data.name;
       } catch (error) {
@@ -161,7 +164,6 @@ export default {
             }
         )
       } else {
-        console.log(userToken)
         await axios.post(`${this.api}/publicacions/boost/${id}/`,
             {},
             {
@@ -262,14 +264,14 @@ export default {
       const userToken = localStorage.getItem('authToken');
       if (userToken === null) return false;
       const response = await axios.get(
-          `${this.api}/u/${this.thread.author}/threads/newest/threads/`,
+          `${this.api}/u/${this.thread.author}/`,
           {
             headers: {
               Authorization: `${userToken}`
             }
           }
       );
-      const token_thread = response.data.user.token;
+      const token_thread = response.data.token;
       return userToken === token_thread;
     },
     async esvotat() {
