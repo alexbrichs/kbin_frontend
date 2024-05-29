@@ -22,16 +22,16 @@
       <span :style="(votat && eslike) ? { color: upvotedColor } : {}" data-subject-target="favCounter">
         {{ thread.num_likes }}
       </span>
-      <span>&nbsp;</span>
-      <span :style="(votat && eslike) ? { color: upvotedColor } : {}"><i class="fa-solid fa-arrow-up"></i></span>
+        <span>&nbsp;</span>
+        <span :style="(votat && eslike) ? { color: upvotedColor } : {}"><i class="fa-solid fa-arrow-up"></i></span>
       </button>
 
       <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
       <span :style="(votat && !eslike) ? { color: downvotedColor } : {}" data-subject-target="favCounter">
         {{ thread.num_dislikes }}
       </span>
-      <span>&nbsp;</span>
-      <span :style="(votat && !eslike) ? { color: downvotedColor } : {}"><i class="fa-solid fa-arrow-down"></i></span>
+        <span>&nbsp;</span>
+        <span :style="(votat && !eslike) ? { color: downvotedColor } : {}"><i class="fa-solid fa-arrow-down"></i></span>
       </button>
     </aside>
     <footer>
@@ -148,6 +148,10 @@ export default {
     },
     async ImpulsarPublicacio(id) {
       const userToken = localStorage.getItem('authToken');
+      if (userToken === null) {
+        localStorage.setItem('NoLoguejat', 'true');
+        window.location.reload();
+      }
       if (this.boosted) {
         await axios.delete(`${this.api}/publicacions/boost/${id}/`,
             {
@@ -173,8 +177,9 @@ export default {
       try {
         // Obtener el token del localStorage
         const userToken = localStorage.getItem('authToken');
-        if (!userToken) {
-          throw new Error('El usuari no està loguejat');
+        if (userToken === null) {
+          localStorage.setItem('NoLoguejat', 'true');
+          window.location.reload();
         }
         //MIRAR SI L'USUARI JA HA VOTAT
         let response = await axios.get(`${this.api}/vots/`,
@@ -255,6 +260,7 @@ export default {
     },
     async espublicaciomeva() {
       const userToken = localStorage.getItem('authToken');
+      if (userToken === null) return false;
       const response = await axios.get(
           `${this.api}/u/${this.thread.author}/threads/newest/threads/`,
           {
@@ -268,8 +274,8 @@ export default {
     },
     async esvotat() {
       const userToken = localStorage.getItem('authToken');
-      if (!userToken) {
-        throw new Error('El usuari no està loguejat');
+      if (userToken === null) {
+        return false;
       }
       //MIRAR SI L'USUARI JA HA VOTAT
       let response = await axios.get(`${this.api}/vots/`,
@@ -290,6 +296,7 @@ export default {
     },
     async esboosted() {
       const userToken = localStorage.getItem('authToken');
+      if (userToken === null) return false;
       const response = await axios.get(
           `${this.api}/boosts/`,
           {

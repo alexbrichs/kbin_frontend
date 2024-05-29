@@ -1,119 +1,120 @@
 <template>
   <BarraBase v-model:actiu="actiu">
     <template v-if="totcarregat">
-    <div id="middle" class="page-entry-single">
-      <div class="kbin-container">
-        <main id="main" data-controller="lightbox timeago" class="">
-          <div id="content">
-            <article :class="articleClass">
-              <header>
-                <h1>
-                  <a rel="nofollow noopener noreferrer" :href="`/thread/${thread.id}/top/`">{{ thread.title }}</a>
-                  <span class="entry__domain" v-if="thread.url">
+      <div id="middle" class="page-entry-single">
+        <div class="kbin-container">
+          <main id="main" data-controller="lightbox timeago" class="">
+            <div id="content">
+              <article :class="articleClass">
+                <header>
+                  <h1>
+                    <a rel="nofollow noopener noreferrer" :href="`/thread/${thread.id}/top/`">{{ thread.title }}</a>
+                    <span class="entry__domain" v-if="thread.url">
           &nbsp;(<a :href="'//'+thread.url" target="_blank">{{ thread.url }}</a> )
         </span>
-                </h1>
-              </header>
-              <div class="entry__body">
-                <div class="content formatted" style="">
-                  <p>{{ thread.body }}</p>
+                  </h1>
+                </header>
+                <div class="entry__body">
+                  <div class="content formatted" style="">
+                    <p>{{ thread.body }}</p>
+                  </div>
                 </div>
-              </div>
 
-              <aside class="meta entry__meta">
-                <a class="user-inline" :href="`/u/${thread.author}`">{{ thread.author }}</a>
-                <time class="timeago" :datetime="thread.creation_date">
-                  &nbsp;{{ tiempoDesdeCreacion(thread.creation_data) }}
-                </time>
-                <span> to </span>
-                <a :href="`/magazine/${thread.magazine}`" class="magazine-inline"
-                   title={{magazineName}}>{{ magazineName }}</a>
-              </aside>
-              <aside class="vote">
-                <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
+                <aside class="meta entry__meta">
+                  <a class="user-inline" :href="`/u/${thread.author}`">{{ thread.author }}</a>
+                  <time class="timeago" :datetime="thread.creation_date">
+                    &nbsp;{{ tiempoDesdeCreacion(thread.creation_data) }}
+                  </time>
+                  <span> to </span>
+                  <a :href="`/magazine/${thread.magazine}`" class="magazine-inline"
+                     title={{magazineName}}>{{ magazineName }}</a>
+                </aside>
+                <aside class="vote">
+                  <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
                   <span :style="(votat && eslike) ? { color: upvotedColor } : {}" data-subject-target="favCounter">
                     {{ thread.num_likes }}
                   </span>
-                  <span>&nbsp;</span>
-                  <span :style="(votat && eslike) ? { color: upvotedColor } : {}"><i class="fa-solid fa-arrow-up"></i></span>
-                </button>
+                    <span>&nbsp;</span>
+                    <span :style="(votat && eslike) ? { color: upvotedColor } : {}"><i class="fa-solid fa-arrow-up"></i></span>
+                  </button>
 
-                <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
+                  <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
                   <span :style="(votat && !eslike) ? { color: downvotedColor } : {}" data-subject-target="favCounter">
                     {{ thread.num_dislikes }}
                   </span>
-                  <span>&nbsp;</span>
-                  <span :style="(votat && !eslike) ? { color: downvotedColor } : {}"><i class="fa-solid fa-arrow-down"></i></span>
-                </button>
-              </aside>
-              <footer>
-                <menu>
-                  <li>
-                    <a class="stretched-link" :href="`/thread/${thread.id}/top/`"><span
-                        data-subject-target="commentsCounter">{{ thread.num_coments }}</span>
-                      comments </a>
-                  </li>
-                  <li>
-                    <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
-                            @click="ImpulsarPublicacio(thread.id)">
-                      <p :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
-                        {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
-                      </p>
-                    </button>
-                  </li>
-
-                  <template v-if="postMeu">
+                    <span>&nbsp;</span>
+                    <span :style="(votat && !eslike) ? { color: downvotedColor } : {}"><i
+                        class="fa-solid fa-arrow-down"></i></span>
+                  </button>
+                </aside>
+                <footer>
+                  <menu>
                     <li>
-                      <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
-                        <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
-                        </button>
-                      </form>
+                      <a class="stretched-link" :href="`/thread/${thread.id}/top/`"><span
+                          data-subject-target="commentsCounter">{{ thread.num_coments }}</span>
+                        comments </a>
                     </li>
                     <li>
                       <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
-                              @click.prevent="EliminarPublicacio(thread.id)">
-                        delete
+                              @click="ImpulsarPublicacio(thread.id)">
+                        <p :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
+                          {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
+                        </p>
                       </button>
                     </li>
-                  </template>
-                </menu>
-                <div data-subject-target="container" class="js-container">
-                </div>
-              </footer>
-            </article>
-            <div id="comment-add" class="section">
-              <h3 hidden="">Añadir un comentario</h3>
-              <form name="entry_comment" method="post" action=""
-                    class="comment-add" enctype="multipart/form-data">
-                <div><label for="entry_comment_6616cdb65f3850.74137319_body"></label><textarea
-                    id="entry_comment_6616cdb65f3850.74137319_body" name="entry_comment[body]"
-                    data-controller="input-length rich-textarea autogrow"
-                    data-action="input-length#updateDisplay" data-input-length-max-value="5000"
-                    style="overflow: hidden; height: 66px;"></textarea>
-                </div>
-                <div class="row actions">
-                  <ul>
-                    <li class="dropdown">
-                      <div>
-                        <button type="submit" id="entry_comment_6616cdb65f3850.74137319_submit"
-                                name="entry_comment[submit]" class="btn btn__primary"
-                                data-action="subject#sendForm">Add comment
+
+                    <template v-if="postMeu">
+                      <li>
+                        <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
+                          <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
+                          </button>
+                        </form>
+                      </li>
+                      <li>
+                        <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
+                                @click.prevent="EliminarPublicacio(thread.id)">
+                          delete
                         </button>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-              </form>
+                      </li>
+                    </template>
+                  </menu>
+                  <div data-subject-target="container" class="js-container">
+                  </div>
+                </footer>
+              </article>
+              <div id="comment-add" class="section">
+                <h3 hidden="">Añadir un comentario</h3>
+                <form name="entry_comment" method="post" action=""
+                      class="comment-add" enctype="multipart/form-data">
+                  <div><label for="entry_comment_6616cdb65f3850.74137319_body"></label><textarea
+                      id="entry_comment_6616cdb65f3850.74137319_body" name="entry_comment[body]"
+                      data-controller="input-length rich-textarea autogrow"
+                      data-action="input-length#updateDisplay" data-input-length-max-value="5000"
+                      style="overflow: hidden; height: 66px;"></textarea>
+                  </div>
+                  <div class="row actions">
+                    <ul>
+                      <li class="dropdown">
+                        <div>
+                          <button type="submit" id="entry_comment_6616cdb65f3850.74137319_submit"
+                                  name="entry_comment[submit]" class="btn btn__primary"
+                                  data-action="subject#sendForm">Add comment
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </form>
+              </div>
+              <section id="comments" class="comments entry-comments comments-tree show-comment-avatar"
+                       data-controller="subject-list comments-wrap"
+                       data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
+                <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"/>
+              </section>
             </div>
-            <section id="comments" class="comments entry-comments comments-tree show-comment-avatar"
-                     data-controller="subject-list comments-wrap"
-                     data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
-              <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"/>
-            </section>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
     </template>
   </BarraBase>
 </template>
@@ -197,7 +198,10 @@ export default {
     },
     async ImpulsarPublicacio(id) {
       const userToken = localStorage.getItem('authToken');
-      if (this.boosted) {
+      if (userToken === null) {
+        localStorage.setItem('NoLoguejat', 'true');
+        this.$router.push('/')
+      } else if (this.boosted) {
         await axios.delete(`${this.api}/publicacions/boost/${id}/`,
             {
               headers: {
@@ -205,6 +209,7 @@ export default {
               }
             }
         )
+        window.location.reload()
       } else {
         await axios.post(`${this.api}/publicacions/boost/${id}/`,
             {},
@@ -214,8 +219,9 @@ export default {
               }
             }
         )
+        window.location.reload()
       }
-      window.location.reload()
+
     },
     async EliminarPublicacio(id) {
       const userToken = localStorage.getItem('authToken');
@@ -242,9 +248,11 @@ export default {
       try {
         // Obtener el token del localStorage
         const userToken = localStorage.getItem('authToken');
-        if (!userToken) {
-          throw new Error('El usuari no està loguejat');
+        if (userToken === null) {
+          localStorage.setItem('NoLoguejat', 'true');
+          this.$router.push('/')
         }
+
         //MIRAR SI L'USUARI JA HA VOTAT
         let response = await axios.get(`${this.api}/vots/`,
             {
@@ -283,6 +291,7 @@ export default {
                 }
             );
           }
+          window.location.reload();
         } else if (tipus === 'dislike') {
           if (votat && !like) {
             response = await axios.delete(
@@ -303,14 +312,16 @@ export default {
                 }
             );
           }
+          window.location.reload();
         }
-        window.location.reload();
+
       } catch (error) {
         console.error('Error al enviar el voto:', error);
       }
     },
     async espublicaciomeva() {
       const userToken = localStorage.getItem('authToken');
+      if (userToken === null) return false;
       const response = await axios.get(
           `${this.api}/u/${this.thread.author}/threads/newest/threads/`,
           {
@@ -324,6 +335,7 @@ export default {
     },
     async esboosted() {
       const userToken = localStorage.getItem('authToken');
+      if (userToken === null) return false;
       const response = await axios.get(
           `${this.api}/boosts/`,
           {
@@ -341,9 +353,7 @@ export default {
     },
     async esvotat() {
       const userToken = localStorage.getItem('authToken');
-      if (!userToken) {
-        throw new Error('El usuari no està loguejat');
-      }
+      if (userToken === null) return false;
       //MIRAR SI L'USUARI JA HA VOTAT
       let response = await axios.get(`${this.api}/vots/`,
           {
