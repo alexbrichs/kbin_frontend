@@ -195,19 +195,68 @@ export default {
         // Obtener el token del localStorage
         const userToken = localStorage.getItem('authToken');
         if (!userToken) {
-          throw new Error('No se encontró el token del usuario en el localStorage');
+          throw new Error('El usuari no està loguejat');
         }
-
-        const response = await axios.post(
-            `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
-            {},
+        //MIRAR SI L'USUARI JA HA VOTAT
+        let response = await axios.get(`${this.api}/vots/`,
             {
               headers: {
                 Authorization: `${userToken}`
               }
             }
-        );
-        console.log('Voto enviado correctamente:', response.data);
+        )
+        console.log(response.status)
+        let vots = response.data;
+        let votat = false;
+        let like = false;
+        vots.forEach(vot => {
+          if (vot.publicacio_id === this.thread.id) {
+            votat = true;
+            like = vot.positiu;
+          }
+        });
+
+        if (tipus === 'like') {
+          if (votat && like) {
+            response = await axios.delete(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                });
+          } else {
+            response = await axios.post(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
+                {},
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                }
+            );
+          }
+        } else if (tipus === 'dislike') {
+          if (votat && !like) {
+            response = await axios.delete(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                });
+          } else {
+            response = await axios.post(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
+                {},
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                }
+            );
+          }
+        }
         window.location.reload();
       } catch (error) {
         console.error('Error al enviar el voto:', error);
