@@ -54,10 +54,10 @@
             </form>
           </li>
           <li>
-            <form :action="`/kbin/eliminar/${thread.id}/`" name="eliminar_publicacio" method="post">
-              <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">delete
-              </button>
-            </form>
+            <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
+                    @click.prevent="EliminarPublicacio(thread.id)">
+              delete
+            </button>
           </li>
         </template>
 
@@ -75,6 +75,7 @@ export default {
   name: 'ShowThreads',
   props: {
     thread: Object,
+    eliminat: Boolean
   },
   data() {
     return {
@@ -201,6 +202,21 @@ export default {
       } catch (error) {
         console.error('Error al enviar el voto:', error);
       }
+    },
+    async EliminarPublicacio(id) {
+      const userToken = localStorage.getItem('authToken');
+      await axios.delete(
+          `${this.api}/publicacions/${id}/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      );
+      localStorage.setItem('eliminat', 'true');
+      window.location.reload();
+
+
     },
     async espublicaciomeva() {
       const userToken = localStorage.getItem('authToken');
