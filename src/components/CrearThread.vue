@@ -70,6 +70,12 @@ export default {
     };
   },
   mounted() {
+    const userToken = localStorage.getItem('authToken');
+      if (userToken === null) {
+        localStorage.setItem('NoLoguejat', 'true');
+        this.$router.push('/')
+        return;
+      }
     this.fetchMagazines();
   },
   methods: {
@@ -111,8 +117,6 @@ export default {
         }
       }
     }
-
-
   }
 };
 </script>
