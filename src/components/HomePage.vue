@@ -31,6 +31,9 @@
           <div v-if="eliminat" class="alert alert__success" role="alert">
             The thread has been successfully deleted.
           </div>
+          <div v-if="NoLoguejat" class="alert alert__danger" role="alert">
+            You need to login to carry out this action.
+          </div>
           <div id="content">
             <ShowThreads v-for="thread in threads" :key="thread.id" :thread="thread" v-model:eliminat="eliminat"/>
           </div>
@@ -56,6 +59,10 @@ export default {
       this.eliminat = true;
         localStorage.removeItem('eliminat');
     }
+    if (localStorage.getItem('NoLoguejat') === 'true') {
+      this.NoLoguejat = true;
+        localStorage.removeItem('NoLoguejat');
+    }
   },
   data() {
     return {
@@ -64,7 +71,8 @@ export default {
       activeFilter: 'tot',
       threads: [],
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
-      eliminat: false
+      eliminat: false,
+      NoLoguejat: false,
     }
   },
   mounted() {
