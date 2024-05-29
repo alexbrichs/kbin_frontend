@@ -1,5 +1,6 @@
 <template>
   <BarraBase v-model:actiu="actiu">
+    <template v-if="totcarregat">
     <div id="middle" class="page-entry-single">
       <div class="kbin-container">
         <main id="main" data-controller="lightbox timeago" class="">
@@ -21,42 +22,44 @@
 
               <aside class="meta entry__meta">
                 <a class="user-inline" :href="`/u/${thread.author}`">{{ thread.author }}</a>
-                <time class="timeago" :datetime="thread.creation_date">&nbsp;{{
-                    tiempoDesdeCreacion(thread.creation_data)
-                  }}
+                <time class="timeago" :datetime="thread.creation_date">
+                  &nbsp;{{ tiempoDesdeCreacion(thread.creation_data) }}
                 </time>
                 <span> to </span>
-                <a :href="`/magazine/${thread.magazine}`" class="magazine-inline" title={{magazineName}}>{{
-                    magazineName
-                  }}</a>
+                <a :href="`/magazine/${thread.magazine}`" class="magazine-inline"
+                   title={{magazineName}}>{{ magazineName }}</a>
               </aside>
               <aside class="vote">
                 <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
-                  <span data-subject-target="favCounter">{{ thread.num_likes }}</span>
+                  <span :style="(votat && eslike) ? { color: upvotedColor } : {}" data-subject-target="favCounter">
+                    {{ thread.num_likes }}
+                  </span>
                   <span>&nbsp;</span>
-                  <span><i class="fa-solid fa-arrow-up"></i></span>
+                  <span :style="(votat && eslike) ? { color: upvotedColor } : {}"><i class="fa-solid fa-arrow-up"></i></span>
                 </button>
 
                 <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
-                  <span data-subject-target="favCounter">{{ thread.num_dislikes }}</span>
+                  <span :style="(votat && !eslike) ? { color: downvotedColor } : {}" data-subject-target="favCounter">
+                    {{ thread.num_dislikes }}
+                  </span>
                   <span>&nbsp;</span>
-                  <span><i class="fa-solid fa-arrow-down"></i></span>
+                  <span :style="(votat && !eslike) ? { color: downvotedColor } : {}"><i class="fa-solid fa-arrow-down"></i></span>
                 </button>
               </aside>
               <footer>
                 <menu>
                   <li>
-                    <a class="stretched-link" href="/kbin/thread/8/top/"><span
+                    <a class="stretched-link" :href="`/thread/${thread.id}/top/`"><span
                         data-subject-target="commentsCounter">{{ thread.num_coments }}</span>
                       comments </a>
                   </li>
                   <li>
-                    <form action="/kbin/boost/8/" name="boost_thread" method="post">
-                      <input type="hidden" name="next" value="/">
-                      <input type="hidden" name="keyword" value="">
-                      <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">boost
-                      </button>
-                    </form>
+                    <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
+                            @click="ImpulsarPublicacio(thread.id)">
+                      <p :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
+                        {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
+                      </p>
+                    </button>
                   </li>
 
                   <template v-if="postMeu">
@@ -111,6 +114,7 @@
         </main>
       </div>
     </div>
+    </template>
   </BarraBase>
 </template>
 
@@ -129,8 +133,14 @@ export default {
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
       thread: {},
       postMeu: false,
+      boosted: false,
+      votat: false,
+      eslike: false,
       comments: [],
-      order: 'newest'
+      order: 'newest',
+      upvotedColor: '#0f5132',
+      downvotedColor: '#842029',
+      totcarregat: false,
     }
   },
   mounted() {
@@ -143,6 +153,9 @@ export default {
       await this.getMagazineName(this.thread.magazine);
       document.title = `${this.thread.title} - ${this.magazineName} - kbin.social`;
       this.postMeu = await this.espublicaciomeva();
+      this.boosted = await this.esboosted();
+      this.votat = await this.esvotat();
+      this.totcarregat = true;
     } catch (error) {
       console.error('Error al obtener los detalles del hilo:', error);
     }
@@ -182,6 +195,28 @@ export default {
         return 'Now';
       }
     },
+    async ImpulsarPublicacio(id) {
+      const userToken = localStorage.getItem('authToken');
+      if (this.boosted) {
+        await axios.delete(`${this.api}/publicacions/boost/${id}/`,
+            {
+              headers: {
+                Authorization: `${userToken}`
+              }
+            }
+        )
+      } else {
+        await axios.post(`${this.api}/publicacions/boost/${id}/`,
+            {},
+            {
+              headers: {
+                Authorization: `${userToken}`
+              }
+            }
+        )
+      }
+      window.location.reload()
+    },
     async EliminarPublicacio(id) {
       const userToken = localStorage.getItem('authToken');
       await axios.delete(
@@ -218,7 +253,6 @@ export default {
               }
             }
         )
-        console.log(response.status)
         let vots = response.data;
         let votat = false;
         let like = false;
@@ -287,6 +321,45 @@ export default {
       );
       const token_thread = response.data.user.token;
       return userToken === token_thread;
+    },
+    async esboosted() {
+      const userToken = localStorage.getItem('authToken');
+      const response = await axios.get(
+          `${this.api}/boosts/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      );
+      let boosts = response.data
+      for (const boost of boosts) {
+        if (boost.publicacio_id === this.thread.id) {
+          return true;
+        }
+      }
+    },
+    async esvotat() {
+      const userToken = localStorage.getItem('authToken');
+      if (!userToken) {
+        throw new Error('El usuari no està loguejat');
+      }
+      //MIRAR SI L'USUARI JA HA VOTAT
+      let response = await axios.get(`${this.api}/vots/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      )
+      let vots = response.data;
+      for (let vot of vots) {
+        if (vot.publicacio_id === this.thread.id) {
+          this.eslike = vot.positiu;
+          return true;
+        }
+      }
+      return false;
     },
     async getComments() {
       try {
