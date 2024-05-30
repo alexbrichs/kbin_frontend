@@ -148,7 +148,7 @@ export default {
       eslike: false,
       vots: [],
       carregarReplies: true,
-      currentComment: this.comment
+      currentComment: this.comment,
       isDeleting: false,
     }
   },
@@ -199,9 +199,8 @@ export default {
             }
           }
       );
-      // const token_comment = response.data.user.token;
-      // return userToken === token_comment;
-      return true;
+      const token_comment = response.data.user.token;
+      return userToken === token_comment;
     },
     showEditForm(commentId) {
       this.editFormsVisibility[commentId] = true;

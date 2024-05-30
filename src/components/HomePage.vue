@@ -7,7 +7,8 @@
             <menu class="options__main no-scroll">
               <li><a :class="{ 'active': activeOption === 'top' }" :href="'/top/' + activeFilter">Top</a></li>
               <li><a :class="{ 'active': activeOption === 'newest' }" :href="'/newest/' + activeFilter">Newest</a></li>
-              <li><a :class="{ 'active': activeOption === 'commented' }" :href="'/commented/' + activeFilter">Commented</a></li>
+              <li><a :class="{ 'active': activeOption === 'commented' }"
+                     :href="'/commented/' + activeFilter">Commented</a></li>
             </menu>
             <menu class="options__filters">
               <li class="dropdown">
@@ -16,8 +17,10 @@
                 </button>
                 <ul class="dropdown__menu">
                   <li><a :class="{ 'active': activeFilter === 'tot' }" :href="'/' + activeOption + '/tot'">Tot</a></li>
-                  <li><a :class="{ 'active': activeFilter === 'links' }" :href="'/' + activeOption + '/links'">Links</a></li>
-                  <li><a :class="{ 'active': activeFilter === 'threads' }" :href="'/' + activeOption + '/threads'">Threads</a></li>
+                  <li><a :class="{ 'active': activeFilter === 'links' }" :href="'/' + activeOption + '/links'">Links</a>
+                  </li>
+                  <li><a :class="{ 'active': activeFilter === 'threads' }" :href="'/' + activeOption + '/threads'">Threads</a>
+                  </li>
                 </ul>
               </li>
             </menu>
@@ -29,7 +32,8 @@
             You need to login to carry out this action.
           </div>
           <div id="content">
-            <ShowThreads v-for="thread in threads" :key="thread.id" :thread="thread" v-model:eliminat="eliminat"/>
+            <ShowThreads v-for="thread in threads" :key="thread.id" :thread="thread" v-model:eliminat="eliminat"
+                         @voted="haVotat"/>
           </div>
         </main>
       </div>
@@ -51,11 +55,11 @@ export default {
   created() {
     if (localStorage.getItem('eliminat') === 'true') {
       this.eliminat = true;
-        localStorage.removeItem('eliminat');
+      localStorage.removeItem('eliminat');
     }
     if (localStorage.getItem('NoLoguejat') === 'true') {
       this.NoLoguejat = true;
-        localStorage.removeItem('NoLoguejat');
+      localStorage.removeItem('NoLoguejat');
     }
   },
   data() {
@@ -69,7 +73,7 @@ export default {
       NoLoguejat: false,
     }
   },
-  mounted() {
+  async mounted() {
     const {activeFilter, activeOption} = this.$route.params;
     if (activeFilter) {
       this.activeFilter = activeFilter;
@@ -77,7 +81,7 @@ export default {
     if (activeOption) {
       this.activeOption = activeOption;
     }
-    this.fetchThreads();
+    await this.fetchThreads();
   },
   methods: {
     async fetchThreads() {
@@ -96,7 +100,11 @@ export default {
         console.error('Error fetching threads:', error);
       }
     },
-
+    haVotat() {
+      if (this.activeOption === 'top') {
+        this.fetchThreads();
+      }
+    }
   }
 }
 </script>
