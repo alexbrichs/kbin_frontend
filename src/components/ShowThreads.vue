@@ -258,7 +258,7 @@ export default {
           }
       );
       localStorage.setItem('eliminat', 'true');
-      window.location.reload();
+      this.$router.push('/')
     },
     async espublicaciomeva() {
       const userToken = localStorage.getItem('authToken');
