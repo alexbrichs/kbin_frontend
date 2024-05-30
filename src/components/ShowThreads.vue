@@ -261,7 +261,12 @@ export default {
           }
       );
       localStorage.setItem('eliminat', 'true');
-      this.$router.push('/')
+      if (this.$route.path === '/' || this.$route.path.startsWith('/commented') || this.$route.path.startsWith('/newest')
+          || this.$route.path.startsWith('/top')) {
+        window.location.reload();
+      } else {
+        this.$router.push('/');
+      }
     },
     async espublicaciomeva() {
       const userToken = localStorage.getItem('authToken');
