@@ -191,6 +191,9 @@ export default {
     },
     async esCommentMeu() {
       const userToken = localStorage.getItem('authToken');
+      if (!userToken) {
+        return false;
+      }
       const response = await axios.get(
           `${this.api}/u/${this.comment.author}/comments/newest/tot/`,
           {
@@ -212,7 +215,11 @@ export default {
       this.carregarReplies = false;
       try {
         const userToken = localStorage.getItem('authToken');
-        if (userToken) {
+        if (userToken === null) {
+          localStorage.setItem('NoLoguejat', 'true');
+          this.$router.push('/')
+          return;
+        } else if (userToken) {
           const response = await axios.post(
               `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/create_reply/${commentId}/`,
               {body: this.replies[commentId]},
@@ -270,7 +277,8 @@ export default {
         const userToken = localStorage.getItem('authToken');
         if (userToken === null) {
           localStorage.setItem('NoLoguejat', 'true');
-          window.location.reload();
+          this.$router.push('/')
+          return;
         }
         //MIRAR SI L'USUARI JA HA VOTAT
         let response = await axios.get(`${this.api}/comments/vots/`,

@@ -122,7 +122,11 @@ export default {
     async addComment() {
       try {
         const userToken = localStorage.getItem('authToken');
-        if (userToken) {
+        if (userToken === null) {
+          localStorage.setItem('NoLoguejat', 'true');
+          this.$router.push('/')
+          return;
+        } else if (userToken) {
           const response = await axios.post(
               `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/${this.id}/create_comment/`,
               {body: this.newComment},
