@@ -6,6 +6,7 @@ import '/public/assets/css/app.910c0aab.css';
 import '/public/assets/css/824.b4cc3385.css';
 import LlistarMagazines from "@/components/LlistarMagazines.vue";
 import CrearMagazine from "@/components/CrearMagazine.vue";
+import VeureMagazine from "@/components/VeureMagazine.vue";
 
 const routes = [
     {
@@ -43,6 +44,11 @@ const routes = [
         path: '/newMagazine/',
         name: 'CrearMagazine',
         component: CrearMagazine
+    },
+    {
+        path: '/magazine/:id/:activeOption/:activeFilter/',
+        name: 'VeureMagazine',
+        component: VeureMagazine
     }
 
 ]
