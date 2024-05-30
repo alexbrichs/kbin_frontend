@@ -165,7 +165,7 @@
               </a>
             </li>
             <li>
-              <a :class="{ 'active': active_option === 'commented' }" :href="`/u/${user.username}/comments/commented/${active_filter}`">
+              <a :class="{ 'active': active_option === 'oldest' }" :href="`/u/${user.username}/comments/oldest/${active_filter}`">
                 <font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> commented </font></font>
               </a>
             </li>
