@@ -131,7 +131,9 @@ export default {
         // Obtener el token del localStorage
         const userToken = localStorage.getItem('authToken');
         if (!userToken) {
-          throw new Error('No se encontró el token del usuario en el localStorage');
+          localStorage.setItem('NoLoguejat', 'true');
+          this.$router.push('/')
+          return;
         }
         const response = await axios.post(
             `https://bravo13-36a68ba47d34.herokuapp.com/api/suscriptions/${id}/`,
