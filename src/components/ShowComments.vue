@@ -56,7 +56,7 @@
             </li>
             <li>
               <a class="stretched-link"
-                 onclick="return confirm('Are you sure you want to delete the comment?');"
+                 @click="confirmAndDelete()"
                  href=""
                  data-action=" subject#getForm">delete</a>
             </li>
@@ -124,7 +124,8 @@
   </div>
   <div v-for="reply in comment.replies" :key="reply.id">
     <ShowComments :comment="reply" @newReplyAdded="$emit('newReplyAdded', $event)"
-                  @voteSent="$emit('voteSent', $event)" @updateVotes="$emit('updateVotes', $event)"/>
+                  @eliminarComment="$emit('eliminarComment', $event)"
+    />
   </div>
 </template>
 
@@ -136,7 +137,7 @@ export default {
   props: {
     comment: Object,
   },
-  emits: ['newReplyAdded', 'voteSent', 'updateVotes'],
+  emits: ['newReplyAdded', 'eliminarComment'],
   data() {
     return {
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
@@ -192,7 +193,7 @@ export default {
     async esCommentMeu() {
       const userToken = localStorage.getItem('authToken');
       const response = await axios.get(
-          `${this.api}/u/${this.comment.author}/`,
+          `${this.api}/u/${this.comment.author}/comments/newest/tot/`,
           {
             headers: {
               Authorization: `${userToken}`
@@ -315,6 +316,10 @@ export default {
       } catch (error) {
         console.error('Error sending vote:', error);
       }
+    },
+    async confirmAndDelete() {
+      console.log('Deleting comment');
+      this.$emit('eliminarComment', this.comment.id);
     },
   }
 }

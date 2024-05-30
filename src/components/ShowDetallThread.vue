@@ -52,7 +52,7 @@
                        data-controller="subject-list comments-wrap"
                        data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
                 <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"
-                              @newReplyAdded="updateComment" @voteSent="voteSent" @updateVotes="updateVotes"/>
+                              @newReplyAdded="updateComment" @eliminarComment="eliminarComment"/>
               </section>
             </div>
           </main>
@@ -162,6 +162,21 @@ export default {
         }
       }
     },
+    async eliminarComment(commentId) {
+      const userToken = localStorage.getItem('authToken');
+      console.log("ELIMINANT")
+      let response = await axios.delete(
+          `${this.api}/comments/${commentId}/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      );
+      console.log("RESPONSE" + response)
+      console.log("HA ELIMINAT")
+      this.comments = this.comments.filter(comment => comment.id !== commentId);
+    }
   }
 };
 </script>
