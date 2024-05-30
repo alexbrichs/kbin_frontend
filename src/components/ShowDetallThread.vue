@@ -52,7 +52,7 @@
                        data-controller="subject-list comments-wrap"
                        data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
                 <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"
-                              @newReplyAdded="updateComment"/>
+                              @newReplyAdded="updateComment" @voteSent="voteSent" @updateVotes="updateVotes"/>
               </section>
             </div>
           </main>
@@ -107,7 +107,7 @@ export default {
       document.title = `${this.thread.title} - ${this.magazineName} - kbin.social`;
       this.totcarregat = true;
     } catch (error) {
-      console.error('Error al obtener los detalles del hilo:', error);
+      console.error('Error obtenint els threads:', error);
     }
   },
   methods: {

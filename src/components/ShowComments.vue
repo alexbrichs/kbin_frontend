@@ -25,22 +25,20 @@
       </div>
 
       <aside class="vote">
-        <form method="post" class="vote__up"
-              action="">
-          <button type="submit" title="Favorito" aria-label="Favorito"
-                  data-action="subject#vote">
-            <span data-subject-target="favCounter">{{ comment.num_likes }}</span> <span><i
-              class="fa-solid fa-arrow-up"></i></span>
-          </button>
-        </form>
-        <form method="post" class="vote__down"
-              action="">
-          <button type="submit" title="Votos negativos" aria-label="Votos negativos"
-                  data-action="subject#vote" class="vote__up">
-            <span data-subject-target="downvoteCounter">{{ comment.num_dislikes }}</span> <span><i
+        <button @click="enviarVot('like')" type="submit" title="Vot positiu" aria-label="Vot positiu"
+                data-action="subject#vote">
+          <span :style="(votat && eslike) ? { color: upvotedColor } : {}" data-subject-target="favCounter">
+        {{ comment.num_likes }}</span>
+          <span>&nbsp;</span>
+          <span :style="(votat && eslike) ? { color: upvotedColor } : {}"><i class="fa-solid fa-arrow-up"></i></span>
+        </button>
+        <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
+          <span :style="(votat && !eslike) ? { color: downvotedColor } : {}" data-subject-target="favCounter">
+        {{ comment.num_dislikes }}</span>
+          <span>&nbsp;</span>
+          <span :style="(votat && !eslike) ? { color: downvotedColor } : {}"><i
               class="fa-solid fa-arrow-down"></i></span>
-          </button>
-        </form>
+        </button>
       </aside>
 
       <footer>
@@ -125,7 +123,8 @@
     </blockquote>
   </div>
   <div v-for="reply in comment.replies" :key="reply.id">
-    <ShowComments :comment="reply" @newReplyAdded="$emit('newReplyAdded', $event)"/>
+    <ShowComments :comment="reply" @newReplyAdded="$emit('newReplyAdded', $event)"
+                  @voteSent="$emit('voteSent', $event)" @updateVotes="$emit('updateVotes', $event)"/>
   </div>
 </template>
 
@@ -137,7 +136,7 @@ export default {
   props: {
     comment: Object,
   },
-  emits: ['newReplyAdded'],
+  emits: ['newReplyAdded', 'voteSent', 'updateVotes'],
   data() {
     return {
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
@@ -146,6 +145,11 @@ export default {
       replyFormsVisibility: {},
       localCommentBody: '',
       replies: {},
+      upvotedColor: '#0f5132',
+      downvotedColor: '#842029',
+      votat: false,
+      eslike: false,
+      vots: [],
     }
   },
   async created() {
@@ -156,6 +160,7 @@ export default {
       console.error('Error', error);
     }
     this.localCommentBody = this.comment.body;
+    this.votat = await this.esvotat();
   },
   methods: {
     tiempoDesdeCreacion(creationDate) {
@@ -187,7 +192,7 @@ export default {
     async esCommentMeu() {
       const userToken = localStorage.getItem('authToken');
       const response = await axios.get(
-          `${this.api}/u/${this.comment.author}/comments/newest/tot/`,
+          `${this.api}/u/${this.comment.author}/`,
           {
             headers: {
               Authorization: `${userToken}`
@@ -225,7 +230,92 @@ export default {
           (error) {
         console.error('Error adding reply:', error);
       }
-    }
-  },
+    },
+    async esvotat() {
+      const userToken = localStorage.getItem('authToken');
+      if (userToken === null) {
+        return false;
+      }
+      //MIRAR SI L'USUARI JA HA VOTAT
+      let response = await axios.get(`${this.api}/comments/vots/`,
+          {
+            headers: {
+              Authorization: `${userToken}`
+            }
+          }
+      )
+      this.vots = response.data;
+      for (let vot of this.vots) {
+        if (vot.comment_id === this.comment.id) {
+          this.eslike = vot.type === 'like';
+          return true;
+        }
+      }
+      return false;
+    },
+    async enviarVot(tipus) {
+      try {
+        const userToken = localStorage.getItem('authToken');
+        if (userToken === null) {
+          localStorage.setItem('NoLoguejat', 'true');
+          window.location.reload();
+        }
+        //MIRAR SI L'USUARI JA HA VOTAT
+        let votat = false;
+        let like = false;
+        this.vots.forEach(vot => {
+          if (vot.comment_id === this.comment.id) {
+            votat = true;
+            like = vot.type === 'like';
+          }
+        });
+
+        if (tipus === 'like') {
+          if (votat && like) {
+            await axios.delete(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                });
+          } else {
+            await axios.post(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
+                {},
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                }
+            );
+          }
+        } else if (tipus === 'dislike') {
+          if (votat && !like) {
+            await axios.delete(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                });
+          } else {
+            await axios.post(
+                `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
+                {},
+                {
+                  headers: {
+                    Authorization: `${userToken}`
+                  }
+                }
+            );
+          }
+        }
+        window.location.reload();
+      } catch (error) {
+        console.error('Error sending vote:', error);
+      }
+    },
+  }
 }
 </script>
