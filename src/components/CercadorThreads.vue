@@ -44,13 +44,12 @@
                 </li>
               </menu>
             </aside>
-
             <div v-if="threads === null || threads.length === 0" id="content" class="overview subjects comments-tree comments show-post-avatar">
               <aside class="section section--muted">
                 <p>Empty</p>
               </aside>
             </div>
-            <div velse id="content">
+            <div v-else id="content">
               <ShowThreads v-for="thread in threads" :key="thread.id" :thread="thread"/>
             </div>
 
@@ -83,7 +82,7 @@ export default {
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
     }
   },
-  mounted() {
+  async   mounted() {
     const {activeFilter, activeOption} = this.$route.params;
     const params = new URLSearchParams(window.location.search);
     // const activeFilterParam = params.get('activeFilter');
@@ -97,7 +96,8 @@ export default {
     if (keyword) {
       this.keyword = keyword;
     }
-    this.Cercador(this.keyword);
+    await this.Cercador(this.keyword);
+    this.Carregat = true;
   },
   watch: {},
   methods: {
@@ -140,7 +140,7 @@ export default {
               });
           this.threads = response.data;
         }
-        this.Carregat = true;
+        this.$router.push(`/cercador/${this.activeOption}/links/${this.keyword !== '' ? '?keyword=' + this.keyword : ''}`);
       }
     }
   }
