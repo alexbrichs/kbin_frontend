@@ -26,7 +26,7 @@
                   </thead>
                   <tbody>
                     <tr v-for="magazine in magazines" :key="magazine.id">
-                      <td>{{ magazine.name }}</td>
+                      <td><a rel="nofollow noopener noreferrer" :href="`/magazine/${magazine.id}/top/tot/`" >{{ magazine.name }}</a></td>
                       <td style="text-align: center">{{ magazine.total_threads }}</td>
                       <td style="text-align: center">{{ magazine.total_comments }}</td>
                       <td style="text-align: center">{{ magazine.total_publicacions }}</td>
@@ -59,12 +59,9 @@
     </div>
   </BarraBase>
 </template>
-
-
 <script>
 import BarraBase from "@/components/BarraBase.vue";
 import axios from "axios";
-
 export default {
   name: 'LlistarMagazines',
   components: {BarraBase},
@@ -82,8 +79,6 @@ export default {
     }
     this.fetchMagazines();
     this.fetchUserSubscriptions();
-
-
   },
   methods: {
     async fetchMagazines() {
@@ -117,11 +112,9 @@ export default {
         console.error(error);
       }
     },
-
     isSubscribed(magazineId) {
       return this.userSubscriptions.some(sub => sub.magazine === magazineId);
     },
-
     async handleSubscription(magazineId) {
       console.log(`Handle subscription for magazine ID: ${magazineId}`);
       if (this.isSubscribed(magazineId)) {
@@ -133,7 +126,6 @@ export default {
       }
       this.fetchUserSubscriptions(); // Refresh the subscriptions after the change
     },
-
     async subscribeUrl(id) {
       try {
         // Obtener el token del localStorage
@@ -156,7 +148,6 @@ export default {
         console.error('Error al enviar la suscripcio:', error);
       }
     },
-
    async unsubscribeUrl(id) {
      try {
         // Obtener el token del localStorage
@@ -179,7 +170,5 @@ export default {
       }
     }
     },
-
-
 }
 </script>
