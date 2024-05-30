@@ -62,9 +62,11 @@ export default {
   data() {
     return {
       selectedUser: localStorage.getItem('selectedUser') || 'NoUser',
+      actiu: 'threads'
     };
   },
   mounted() {
+
     this.updateDocument();
   },
   watch: {
@@ -89,9 +91,6 @@ export default {
       }
     }
   },
-  props: {
-    actiu: String,
-  },
   computed: {
     estaLoguejat() {
       return localStorage.getItem('authToken') !== null;
@@ -114,11 +113,20 @@ export default {
         } else if (this.$route.path.startsWith('/new/link')) {
           document.title = 'Add new link   - kbin.social';
           this.$emit('update:actiu', '');
+        } else if (this.$route.path.startsWith('/magazines')) {
+          this.actiu = 'magazines'
+          document.title = 'Magazines   - kbin.social';
+        } else if (this.$route.path.startsWith('/u/')) {
+          const {username} = this.$route.params;
+          this.actiu = ''
+          document.title = `Overview - ${username}   - kbin.social`;
+        } else if (this.$route.path.startsWith('/newMagazine')) {
+          document.title = `Create new magazine - kbin.social`;
         }
       }
     },
     logout() {
-      localStorage.removeItem('selectedUser','');
+      localStorage.removeItem('selectedUser', '');
       localStorage.removeItem('authToken')
       window.location.reload();
     }
