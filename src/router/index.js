@@ -23,7 +23,7 @@ const routes = [
         component: HomePage
     },
     {
-        path: '/thread/:id/top/',
+        path: '/thread/:id/:ordre/',
         name: 'ShowDetallThread',
         component: ShowDetallThread,
         props: true
@@ -72,7 +72,7 @@ const routes = [
         path: '/editar/publicacio/:id/',
         name: 'EditarPublicacio',
         component: EditarPublicacio,
-        props: (route) => ({ thread: route.query.thread ? JSON.parse(route.query.thread) : {} })
+        props: (route) => ({thread: route.query.thread ? JSON.parse(route.query.thread) : {}})
     }
 ]
 const user_routes = [
