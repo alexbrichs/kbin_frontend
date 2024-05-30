@@ -170,6 +170,18 @@
               </a>
             </li>
           </menu>
+          <menu class="options__filters">
+            <li class="dropdown">
+              <button aria-label="Filtrar per tipus" title="Filtrar per tipus"><i class="fa-solid fa-filter"></i> Filter
+                by type
+              </button>
+              <ul class="dropdown__menu">
+                <li><a :class="{ 'active': active_filter === 'tot' }" :href="`/u/${user.username}/comments/${active_option}/tot`" >Tot</a></li>
+                <li><a :class="{ 'active': active_filter === 'links' }" :href="`/u/${user.username}/comments/${active_option}/links`" >Links</a></li>
+                <li><a :class="{ 'active': active_filter === 'threads' }" :href="`/u/${user.username}/comments/${active_option}/threads`" >Threads</a></li>
+              </ul>
+            </li>
+          </menu>
         </aside>
 
         <div id="content" class="overview subjects comments-tree comments show-comment-avatar show-post-avatar">
