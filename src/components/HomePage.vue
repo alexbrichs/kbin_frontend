@@ -5,12 +5,9 @@
         <main id="main" class="" data-controller="lightbox timeago">
           <aside id="options" class="options options--top">
             <menu class="options__main no-scroll">
-              <li><a :class="{ 'active': activeOption === 'top' }" :href="'/top/' + activeFilter"
-                     @click="updateActiveOption('top')">Top</a></li>
-              <li><a :class="{ 'active': activeOption === 'newest' }" :href="'/newest/' + activeFilter"
-                     @click="updateActiveOption('newest')">Newest</a></li>
-              <li><a :class="{ 'active': activeOption === 'commented' }" :href="'/commented/' + activeFilter"
-                     @click="updateActiveOption('commented')">Commented</a></li>
+              <li><a :class="{ 'active': activeOption === 'top' }" :href="'/top/' + activeFilter">Top</a></li>
+              <li><a :class="{ 'active': activeOption === 'newest' }" :href="'/newest/' + activeFilter">Newest</a></li>
+              <li><a :class="{ 'active': activeOption === 'commented' }" :href="'/commented/' + activeFilter">Commented</a></li>
             </menu>
             <menu class="options__filters">
               <li class="dropdown">
@@ -18,12 +15,9 @@
                   <i class="fa-solid fa-filter"></i> Filter by type
                 </button>
                 <ul class="dropdown__menu">
-                  <li><a :class="{ 'active': activeFilter === 'tot' }" :href="'/' + activeOption + '/tot'"
-                         @click="updateActiveFilter('tot')">Tot</a></li>
-                  <li><a :class="{ 'active': activeFilter === 'links' }" :href="'/' + activeOption + '/links'"
-                         @click="updateActiveFilter('links')">Links</a></li>
-                  <li><a :class="{ 'active': activeFilter === 'threads' }" :href="'/' + activeOption + '/threads'"
-                         @click="updateActiveFilter('threads')">Threads</a></li>
+                  <li><a :class="{ 'active': activeFilter === 'tot' }" :href="'/' + activeOption + '/tot'">Tot</a></li>
+                  <li><a :class="{ 'active': activeFilter === 'links' }" :href="'/' + activeOption + '/links'">Links</a></li>
+                  <li><a :class="{ 'active': activeFilter === 'threads' }" :href="'/' + activeOption + '/threads'">Threads</a></li>
                 </ul>
               </li>
             </menu>

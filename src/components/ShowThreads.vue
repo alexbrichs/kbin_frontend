@@ -8,6 +8,11 @@
         </span>
       </h1>
     </header>
+    <div v-if="detallat" class="entry__body">
+      <div class="content formatted" style="">
+        <p>{{ thread.body }}</p>
+      </div>
+    </div>
     <aside class="meta entry__meta">
       <a class="user-inline" :href="`/u/${thread.author}`">{{ thread.author }}</a>
       <time class="timeago" :datetime="thread.creation_date">&nbsp;{{
@@ -81,7 +86,8 @@ export default {
   name: 'ShowThreads',
   props: {
     thread: Object,
-    eliminat: Boolean
+    eliminat: Boolean,
+    detallat: Boolean,
   },
   data() {
     return {
@@ -140,7 +146,6 @@ export default {
     },
     async getMagazineName(magazineId) {
       try {
-        console.log(magazineId)
         const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/magazine/${magazineId}`);
         this.magazineName = response.data.name;
       } catch (error) {
