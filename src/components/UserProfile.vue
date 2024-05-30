@@ -81,7 +81,6 @@
                       </figure>
                       <h1>{{ user.username }}</h1>
                       <small>@{{ user.username }}@kbin.social</small>
-                      <small>{{ user.token }}</small>
                       <small v-if="user.token !== null">{{ user.token }}</small>
                     </div>
                   </div>
@@ -166,7 +165,7 @@
             </li>
             <li>
               <a :class="{ 'active': active_option === 'oldest' }" :href="`/u/${user.username}/comments/oldest/${active_filter}`">
-                <font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> commented </font></font>
+                <font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> oldest </font></font>
               </a>
             </li>
           </menu>
@@ -192,7 +191,7 @@
           </template>
           <template v-else>
             <div>
-              <ShowComments v-for="comment in data" :key="comment.id" :comment="comment"/>
+              <ProfileComments v-for="comment in data" :key="comment.id" :comment="comment"/>
             </div>
           </template>
         </div>
@@ -207,13 +206,13 @@
 import axios from "axios";
 import BarraBase from "@/components/BarraBase.vue";
 import ShowThreads from '@/components/ShowThreads.vue';
-import ShowComments from '@/components/ShowComments.vue'
+import ProfileComments from '@/components/ProfileComments.vue'
 export default {
   name: 'UserProfile',
   components: {
     BarraBase,
     ShowThreads,
-    ShowComments,
+    ProfileComments,
   },
   props: ['username', 'activeSelected', 'activeOption', 'activeFilter'],
   data() {
