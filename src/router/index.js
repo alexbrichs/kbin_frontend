@@ -7,6 +7,8 @@ import CrearThread from "@/components/CrearThread.vue";
 import EditarPublicacio from "@/components/EditarPublicacio.vue";
 import '/public/assets/css/app.910c0aab.css';
 import '/public/assets/css/824.b4cc3385.css';
+import LlistarMagazines from "@/components/LlistarMagazines.vue";
+import CrearMagazine from "@/components/CrearMagazine.vue";
 
 const routes = [
     {
@@ -36,6 +38,20 @@ const routes = [
         component: CercadorThreads
     },
     {
+        path: '/magazines/',
+        name: 'LlistarMagazines',
+        component: LlistarMagazines
+    },
+    {
+        path: '/magazines/:activeOption/',
+        name: 'LlistarMagazinesOrdre',
+        component: LlistarMagazines
+    },
+    {
+        path: '/newMagazine/',
+        name: 'CrearMagazine',
+        component: CrearMagazine
+    },
         path: '/new/thread/',
         name: 'CrearThread',
         component: CrearThread
