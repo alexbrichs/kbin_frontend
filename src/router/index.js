@@ -52,6 +52,32 @@ const user_routes = [
         component: UserProfile,
         props: true
     },
+    // Veure publicacions (threads i/o links)
+    {
+        path: '/u/:username/:activeOption/:activeFilter/',
+        name: 'UserProfile1',
+        component: UserProfile,
+    },
+    {
+        path: '/u/:username/commented/',
+        name: 'UserProfile2',
+        component: UserProfile,
+    },
+    {
+        path: '/u/:username/comment/:activeOption/:activeFilter/',
+        name: 'UserProfile3',
+        component: UserProfile,
+    },
+    {
+        path: '/u/:username/boosts/',
+        name: 'UserProfile4',
+        component: UserProfile,
+    },
+    {
+        path: '/u/:username/boosts/:activeOption/:activeFilter/',
+        name: 'UserProfile5',
+        component: UserProfile,
+    },
 ]
 
 // Combinar les rutes

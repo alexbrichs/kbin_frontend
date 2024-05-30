@@ -194,20 +194,18 @@
           </menu>
         </aside>
 
-        <!--
         <div id="content" class="overview subjects comments-tree comments show-comment-avatar show-post-avatar">
           <template v-if="selected !== 'com'">
-            <div v-for="thread in user.data" :key="thread.id">
-              <ShowThreads :thread="thread"></ShowThreads>
+            <div>
+              <ShowThreads v-for="thread in data" :key="thread.id" :thread="thread"/>
             </div>
           </template>
           <template v-else>
-            <div v-for="(comment, thread) in user.data" :key="comment.id">
-              <comment-component :comment="comment" :thread="thread"></comment-component>
+            <div>
+              <ShowComments v-for="comment in data" :key="comment.id" :comment="comment"/>
             </div>
           </template>
         </div>
-        -->
       </main>
     </div>
   </div>
@@ -218,21 +216,39 @@
 <script>
 import axios from "axios";
 import BarraBase from "@/components/BarraBase.vue";
+import ShowThreads from '@/components/ShowThreads.vue';
+import ShowComments from '@/components/ShowComments.vue'
 export default {
   name: 'UserProfile',
-  components: {BarraBase},
+  components: {
+    BarraBase,
+    ShowThreads,
+    ShowComments,
+  },
   props: ['username'],
   data() {
     return {
       user: {},
       data: {},
-      actiu: 'actiu',
+      actiu: '',
       selected: 'threads',
       active_filter: 'tot',
       active_option: 'newest'
     };
   },
   mounted() {
+    const {selected, activeFilter, activeOption} = this.$route.params;
+    if (activeFilter) {
+      this.active_filter = activeFilter;
+    }
+    if (activeOption) {
+      this.active_option = activeOption;
+    }
+    if (selected) {
+      this.selected = selected;
+    }
+    console.log(this.active_filter);
+    console.log(this.active_option);
     this.fetchUser();
   },
   methods: {
@@ -240,7 +256,7 @@ export default {
       try {
         // const apiKey = await this.getKey();
         const apiKey = localStorage.getItem('authToken');
-        const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/u/${this.username}/threads/newest/tot/`, {
+        const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/u/${this.username}/${this.selected}/${this.active_option}/${this.active_filter}/`, {
           headers: {
             'Authorization': `${apiKey}`
           }
