@@ -25,7 +25,7 @@
     <aside class="vote">
       <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
       <span :style="(votat && eslike) ? { color: upvotedColor } : {}" data-subject-target="favCounter">
-        {{ thread.num_likes }}
+        {{ currentThread.num_likes }}
       </span>
         <span>&nbsp;</span>
         <span :style="(votat && eslike) ? { color: upvotedColor } : {}"><i class="fa-solid fa-arrow-up"></i></span>
@@ -50,7 +50,7 @@
           <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
                   @click="ImpulsarPublicacio(thread.id)">
           <span :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
-            {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
+            {{ thread.num_boosts > 0 ? 'boost (' + currentThread.num_boosts + ')' : 'boost' }}
           </span>
           </button>
 
@@ -100,6 +100,8 @@ export default {
       votat: false,
       eslike: false,
       totcarregat: false,
+      currentThread: this.thread
+
     }
   },
   async created() {
@@ -108,6 +110,9 @@ export default {
     this.boosted = await this.esboosted();
     this.votat = await this.esvotat();
     this.totcarregat = true;
+    this.currentThread = this.thread
+    console.log(this.thread);
+    console.log(this.currentThread);
   },
   computed: {
     articleClass() {
@@ -166,6 +171,8 @@ export default {
               }
             }
         )
+        --this.currentThread.num_boosts;
+        this.boosted = false;
       } else {
         await axios.post(`${this.api}/publicacions/boost/${id}/`,
             {},
@@ -175,8 +182,9 @@ export default {
               }
             }
         )
+        this.boosted=true;
+        ++this.currentThread.num_boosts;
       }
-      window.location.reload()
     },
     async enviarVot(tipus) {
       try {
@@ -213,6 +221,8 @@ export default {
                     Authorization: `${userToken}`
                   }
                 });
+            --this.currentThread.num_likes
+            this.votat = false;
           } else {
             response = await axios.post(
                 `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
@@ -223,6 +233,11 @@ export default {
                   }
                 }
             );
+            ++this.currentThread.num_likes
+            if (votat) --this.currentThread.num_dislikes
+            else this.votat = true;
+            this.eslike = true;
+
           }
         } else if (tipus === 'dislike') {
           if (votat && !like) {
@@ -233,6 +248,8 @@ export default {
                     Authorization: `${userToken}`
                   }
                 });
+            --this.currentThread.num_dislikes
+            this.votat = false;
           } else {
             response = await axios.post(
                 `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
@@ -243,9 +260,13 @@ export default {
                   }
                 }
             );
+            ++this.currentThread.num_dislikes
+            if (votat) --this.currentThread.num_likes
+            else this.votat = true;
+            this.eslike = false;
           }
         }
-        window.location.reload();
+        // window.location.reload();
       } catch (error) {
         console.error('Error al enviar el voto:', error);
       }
