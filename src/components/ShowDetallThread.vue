@@ -135,6 +135,7 @@ export default {
 
           this.insertCommentInOrder(response.data);
           this.newComment = '';
+          this.thread.num_coments += 1;
         }
       } catch
           (error) {
@@ -163,20 +164,33 @@ export default {
       }
     },
     async eliminarComment(commentId) {
-      const userToken = localStorage.getItem('authToken');
-      console.log("ELIMINANT")
-      let response = await axios.delete(
-          `${this.api}/comments/${commentId}/`,
-          {
-            headers: {
-              Authorization: `${userToken}`
+      try {
+        const userToken = localStorage.getItem('authToken');
+        await axios.delete(
+            `${this.api}/comments/${commentId}/`,
+            {
+              headers: {
+                Authorization: `${userToken}`
+              }
             }
-          }
-      );
-      console.log("RESPONSE" + response)
-      console.log("HA ELIMINAT")
-      this.comments = this.comments.filter(comment => comment.id !== commentId);
-    }
+        );
+        this.eliminarReply(this.comments, commentId);
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    },
+    eliminarReply(comments, replyId) {
+      for (let i = 0; i < comments.length; i++) {
+        if (comments[i].id === replyId) {
+          this.thread.num_coments -= (1 + comments[i].replies.length);
+          comments.splice(i, 1);
+          return;
+        }
+        if (comments[i].replies && comments[i].replies.length > 0) {
+          this.eliminarReply(comments[i].replies, replyId);
+        }
+      }
+    },
   }
 };
 </script>

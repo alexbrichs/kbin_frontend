@@ -54,12 +54,7 @@
                  @click="showEditForm(comment.id)"
                  data-action=" subject#getForm">edit</a>
             </li>
-            <li>
-              <a class="stretched-link"
-                 @click="confirmAndDelete()"
-                 href=""
-                 data-action=" subject#getForm">delete</a>
-            </li>
+            <button @click="confirmAndDelete" :disabled="isDeleting">delete</button>
           </template>
         </menu>
         <h3 hidden="">Add a comment</h3>
@@ -151,6 +146,7 @@ export default {
       votat: false,
       eslike: false,
       vots: [],
+      isDeleting: false,
     }
   },
   async created() {
@@ -318,8 +314,16 @@ export default {
       }
     },
     async confirmAndDelete() {
-      console.log('Deleting comment');
-      this.$emit('eliminarComment', this.comment.id);
+      if (this.isDeleting) {
+        return; // if a delete request is already in progress, do nothing
+      }
+
+      if (confirm('Are you sure you want to delete this comment?')) {
+        this.isDeleting = true; // disable the delete button
+        console.log('Deleting comment');
+        this.$emit('eliminarComment', this.comment.id);
+        this.isDeleting = false; // re-enable the delete button once the request has completed
+      }
     },
   }
 }
