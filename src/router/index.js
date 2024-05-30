@@ -57,26 +57,37 @@ const user_routes = [
         path: '/u/:username/:activeOption/:activeFilter/',
         name: 'UserProfile1',
         component: UserProfile,
+        props: true
     },
     {
         path: '/u/:username/commented/',
         name: 'UserProfile2',
         component: UserProfile,
+        props: true
     },
     {
-        path: '/u/:username/comment/:activeOption/:activeFilter/',
+        path: '/u/:username/commented/:activeOption/:activeFilter/',
         name: 'UserProfile3',
         component: UserProfile,
+        props: true
     },
     {
         path: '/u/:username/boosts/',
         name: 'UserProfile4',
         component: UserProfile,
+        props: true
     },
     {
         path: '/u/:username/boosts/:activeOption/:activeFilter/',
         name: 'UserProfile5',
         component: UserProfile,
+        props: true
+    },
+    {
+        path: '/u/:username/:selected/:activeOption/:activeFilter/',
+        name: 'UserProfile5',
+        component: UserProfile,
+        props: true
     },
 ]
 
