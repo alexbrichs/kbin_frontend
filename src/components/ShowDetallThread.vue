@@ -52,7 +52,7 @@
                        data-controller="subject-list comments-wrap"
                        data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
                 <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"
-                              @newReplyAdded="updateComment" @voteSent="voteSent" @updateVotes="updateVotes"/>
+                              @newReplyAdded="updateComment" @eliminarComment="eliminarComment"/>
               </section>
             </div>
           </main>
@@ -135,6 +135,7 @@ export default {
 
           this.insertCommentInOrder(response.data);
           this.newComment = '';
+          this.thread.num_coments += 1;
         }
       } catch
           (error) {
@@ -159,6 +160,34 @@ export default {
         }
         if (comments[i].replies && comments[i].replies.length > 0) {
           this.updateComment(comments[i].replies, updatedComment, commentId);
+        }
+      }
+    },
+    async eliminarComment(commentId) {
+      try {
+        const userToken = localStorage.getItem('authToken');
+        await axios.delete(
+            `${this.api}/comments/${commentId}/`,
+            {
+              headers: {
+                Authorization: `${userToken}`
+              }
+            }
+        );
+        this.eliminarReply(this.comments, commentId);
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    },
+    eliminarReply(comments, replyId) {
+      for (let i = 0; i < comments.length; i++) {
+        if (comments[i].id === replyId) {
+          this.thread.num_coments -= (1 + comments[i].replies.length);
+          comments.splice(i, 1);
+          return;
+        }
+        if (comments[i].replies && comments[i].replies.length > 0) {
+          this.eliminarReply(comments[i].replies, replyId);
         }
       }
     },

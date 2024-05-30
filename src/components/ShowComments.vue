@@ -54,12 +54,7 @@
                  @click="showEditForm(comment.id)"
                  data-action=" subject#getForm">edit</a>
             </li>
-            <li>
-              <a class="stretched-link"
-                 onclick="return confirm('Are you sure you want to delete the comment?');"
-                 href=""
-                 data-action=" subject#getForm">delete</a>
-            </li>
+            <button @click="confirmAndDelete" :disabled="isDeleting">delete</button>
           </template>
         </menu>
         <h3 hidden="">Add a comment</h3>
@@ -124,7 +119,8 @@
   </div>
   <div v-for="reply in comment.replies" :key="reply.id">
     <ShowComments :comment="reply" @newReplyAdded="$emit('newReplyAdded', $event)"
-                  @voteSent="$emit('voteSent', $event)" @updateVotes="$emit('updateVotes', $event)"/>
+                  @eliminarComment="$emit('eliminarComment', $event)"
+    />
   </div>
 </template>
 
@@ -136,7 +132,7 @@ export default {
   props: {
     comment: Object,
   },
-  emits: ['newReplyAdded', 'voteSent', 'updateVotes'],
+  emits: ['newReplyAdded', 'eliminarComment'],
   data() {
     return {
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
@@ -150,6 +146,7 @@ export default {
       votat: false,
       eslike: false,
       vots: [],
+      isDeleting: false,
     }
   },
   async created() {
@@ -192,7 +189,7 @@ export default {
     async esCommentMeu() {
       const userToken = localStorage.getItem('authToken');
       const response = await axios.get(
-          `${this.api}/u/${this.comment.author}/`,
+          `${this.api}/u/${this.comment.author}/comments/newest/tot/`,
           {
             headers: {
               Authorization: `${userToken}`
@@ -314,6 +311,18 @@ export default {
         window.location.reload();
       } catch (error) {
         console.error('Error sending vote:', error);
+      }
+    },
+    async confirmAndDelete() {
+      if (this.isDeleting) {
+        return; // if a delete request is already in progress, do nothing
+      }
+
+      if (confirm('Are you sure you want to delete this comment?')) {
+        this.isDeleting = true; // disable the delete button
+        console.log('Deleting comment');
+        this.$emit('eliminarComment', this.comment.id);
+        this.isDeleting = false; // re-enable the delete button once the request has completed
       }
     },
   }
