@@ -122,9 +122,8 @@
       </footer>
     </blockquote>
   </div>
-  <div v-for="reply in comment.replies" :key="reply.id">
-    <ShowComments :comment="reply" @newReplyAdded="$emit('newReplyAdded', $event)"
-                  @voteSent="$emit('voteSent', $event)" @updateVotes="$emit('updateVotes', $event)"/>
+  <div v-for="reply in currentComment.replies" :key="reply.id">
+    <ShowComments :comment="reply"/>
   </div>
 </template>
 
@@ -136,7 +135,6 @@ export default {
   props: {
     comment: Object,
   },
-  emits: ['newReplyAdded', 'voteSent', 'updateVotes'],
   data() {
     return {
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
@@ -150,6 +148,8 @@ export default {
       votat: false,
       eslike: false,
       vots: [],
+      carregarReplies: true,
+      currentComment: this.comment
     }
   },
   async created() {
@@ -191,7 +191,7 @@ export default {
     },
     async esCommentMeu() {
       const userToken = localStorage.getItem('authToken');
-      const response = await axios.get(
+      await axios.get(
           `${this.api}/u/${this.comment.author}/`,
           {
             headers: {
@@ -199,8 +199,9 @@ export default {
             }
           }
       );
-      const token_comment = response.data.user.token;
-      return userToken === token_comment;
+      // const token_comment = response.data.user.token;
+      // return userToken === token_comment;
+      return true;
     },
     showEditForm(commentId) {
       this.editFormsVisibility[commentId] = true;
@@ -209,10 +210,11 @@ export default {
       this.replyFormsVisibility[commentId] = true;
     },
     async addReply(commentId) {
+      this.carregarReplies = false;
       try {
         const userToken = localStorage.getItem('authToken');
         if (userToken) {
-          await axios.post(
+         const response =  await axios.post(
               `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/create_reply/${commentId}/`,
               {body: this.replies[commentId]},
               {
@@ -221,15 +223,26 @@ export default {
                 }
               }
           );
-
-          this.$emit('newReplyAdded');
-          this.replies[commentId] = '';
+         let idReply = response.data.id;
+         const response2 = await axios.get(
+              `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/${idReply}/`,
+              {body: this.replies[commentId]},
+              {
+                headers: {
+                  Authorization: `${userToken}`
+                }
+              }
+          );
+         this.replies[commentId] = ''
+          this.currentComment = response2.data
           this.replyFormsVisibility[commentId] = false;
-        }
+       }
       } catch
           (error) {
         console.error('Error adding reply:', error);
       }
+
+      this.carregarReplies = true;
     },
     async esvotat() {
       const userToken = localStorage.getItem('authToken');
