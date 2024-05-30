@@ -52,6 +52,7 @@ const routes = [
         name: 'CrearMagazine',
         component: CrearMagazine
     },
+    {
         path: '/new/thread/',
         name: 'CrearThread',
         component: CrearThread
