@@ -247,6 +247,7 @@ export default {
           .catch(error => {
             console.error(error);
           });
+      this.$router.push(`/u/${this.user.username}`)
     },
     handleAvatarUpload(event) {
       // Capturar la imagen seleccionada y asignarla a la propiedad image
