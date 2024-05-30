@@ -12,15 +12,18 @@
                 <div v-else-if="!thread.url && edited" class="alert alert__success" role="alert">
                   The Thread has been successfully edited.
                 </div>
-                <div id="comment-add" class="section">
-                  <h3 hidden="">Añadir un comentario</h3>
-                  <form name="entry_comment" method="post" action=""
-                        class="comment-add" enctype="multipart/form-data">
-                    <div><label for="entry_comment_6616cdb65f3850.74137319_body"></label><textarea
-                        id="entry_comment_6616cdb65f3850.74137319_body" name="entry_comment[body]"
-                        data-controller="input-length rich-textarea autogrow"
-                        data-action="input-length#updateDisplay" data-input-length-max-value="5000"
-                        style="overflow: hidden; height: 66px;"></textarea>
+              </footer>
+            </article>
+            <div id="comment-add" class="section">
+              <h3 hidden="">Add a comment</h3>
+              <form name="entry_comment" method="post"
+                    class="comment-add" enctype="multipart/form-data" @submit.prevent="addComment">
+                <div><label for="entry_comment_6616cdb65f3850.74137319_body"></label><textarea
+                    id="entry_comment_6616cdb65f3850.74137319_body" name="entry_comment[body]"
+                    data-controller="input-length rich-textarea autogrow"
+                    data-action="input-length#updateDisplay" data-input-length-max-value="5000"
+                    style="overflow: hidden; height: 66px;"
+                    v-model="newComment"></textarea>
                     </div>
                     <div class="row actions">
                       <ul>
@@ -70,6 +73,7 @@ export default {
       thread: {},
       comments: [],
       order: 'newest',
+      newComment: '',
       totcarregat: false,
       edited: false,
     }
@@ -100,6 +104,28 @@ export default {
         console.error('Error fetching comments:', error);
       }
     },
+    async addComment() {
+      try {
+        const userToken = localStorage.getItem('authToken');
+        if (userToken) {
+          const response = await axios.post(
+              `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/${this.id}/create_comment/`,
+              {body: this.newComment},
+              {
+                headers: {
+                  Authorization: `${userToken}`
+                }
+              }
+          );
+
+          this.comments.push(response.data);
+          this.newComment = '';
+        }
+      } catch
+          (error) {
+        console.error('Error adding comment:', error);
+      }
+    }
   }
 };
 </script>
