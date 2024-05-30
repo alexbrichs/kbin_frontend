@@ -26,7 +26,7 @@
                   </thead>
                   <tbody>
                     <tr v-for="magazine in magazines" :key="magazine.id">
-                      <td><a rel="nofollow noopener noreferrer" :href="`/magazine/${magazine.id}/top/tot/`" >{{ magazine.name }}</a></td>
+                      <td>{{ magazine.name }}</td>
                       <td style="text-align: center">{{ magazine.total_threads }}</td>
                       <td style="text-align: center">{{ magazine.total_comments }}</td>
                       <td style="text-align: center">{{ magazine.total_publicacions }}</td>
