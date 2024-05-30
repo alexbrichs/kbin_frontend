@@ -39,14 +39,14 @@
                     </div>
                   </form>
                 </div>
-                <section id="comments" class="comments entry-comments comments-tree show-comment-avatar"
-                         data-controller="subject-list comments-wrap"
-                         data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
-                  <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"/>
-                </section>
-            </div>
-          </main>
-        </div>
+            <section id="comments" class="comments entry-comments comments-tree show-comment-avatar"
+                     data-controller="subject-list comments-wrap"
+                     data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
+              <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"
+                            @newReplyAdded="updateComment"/>
+            </section>
+          </div>
+        </main>
       </div>
     </template>
   </BarraBase>
@@ -125,7 +125,21 @@ export default {
           (error) {
         console.error('Error adding comment:', error);
       }
-    }
+    },
+    newReplyAdded(updatedComment, commentId) {
+      this.updateComment(this.comments, updatedComment, commentId);
+      this.commentsUpdated = !this.commentsUpdated;
+    },
+    updateComment(comments, updatedComment, commentId) {
+      for (let i = 0; i < comments.length; i++) {
+        if (comments[i].id === commentId) {
+          this.$set(comments, i, updatedComment);
+        }
+        if (comments[i].replies && comments[i].replies.length > 0) {
+          this.updateComment(comments[i].replies, updatedComment, commentId);
+        }
+      }
+    },
   }
 };
 </script>
