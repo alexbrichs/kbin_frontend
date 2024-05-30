@@ -188,7 +188,6 @@ export default {
     },
     async enviarVot(tipus) {
       try {
-        // Obtener el token del localStorage
         const userToken = localStorage.getItem('authToken');
         if (userToken === null) {
           localStorage.setItem('NoLoguejat', 'true');

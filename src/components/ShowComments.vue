@@ -8,14 +8,14 @@
             data-action="mouseover->mentions#user_popup mouseout->mentions#user_popup_out"
             class="user-inline"
             :title="comment.author"
-            href="">
+            :href="'/u/' + comment.author">
           {{ comment.author }}</a>,
         <time class="timeago" :datetime="comment.creation_data">&nbsp;{{
             tiempoDesdeCreacion(comment.creation_data)
           }}
         </time>
         <template v-if="comment.last_edited !== null">
-          (edited
+          ( edited
           <time class="timeago" :datetime="comment.last_edited"> {{ tiempoDesdeCreacion(comment.last_edited) }}</time>
           )
         </template>
@@ -87,9 +87,8 @@
           </div>
         </form>
         <p></p>
-        <form :id="'edit_' + comment.id" name="edit_comment" method="post"
+        <form :id="'edit_' + comment.id" name="edit_comment"
               v-show="editFormsVisibility[comment.id]"
-              action=""
               class="comment-add" enctype="multipart/form-data" style="display: none">
           <div><label :for="'entry_comment_' + comment.id + '_body'"></label><textarea
               :id="'entry_comment_' + comment.id + '_body'"
@@ -107,7 +106,8 @@
                   <button type="submit"
                           :id="'entry_comment_' + comment.id + '_submit'"
                           name="entry_comment[submit]" class="btn btn__primary"
-                          data-action="subject#sendForm">Update comment
+                          data-action="subject#sendForm"
+                          @click="editComment" :disabled="isEditing">Update comment
                   </button>
                 </div>
               </li>
@@ -119,7 +119,7 @@
   </div>
   <div v-for="reply in currentComment.replies" :key="reply.id">
     <ShowComments :comment="reply"
-                  @eliminarComment="$emit('eliminarComment', $event)"
+                  @eliminarComment="$emit('eliminarComment', $event)" @voted="$emit('voted', $event)"
     />
   </div>
 </template>
@@ -133,7 +133,7 @@ export default {
     comment: Object,
   },
 
-  emits: ['eliminarComment'],
+  emits: ['eliminarComment', 'voted'],
   data() {
     return {
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
@@ -146,10 +146,10 @@ export default {
       downvotedColor: '#842029',
       votat: false,
       eslike: false,
-      vots: [],
       carregarReplies: true,
-      currentComment: this.comment
+      currentComment: this.comment,
       isDeleting: false,
+      isEditing: false,
     }
   },
   async created() {
@@ -199,9 +199,8 @@ export default {
             }
           }
       );
-      // const token_comment = response.data.user.token;
-      // return userToken === token_comment;
-      return true;
+      const token_comment = response.data.user.token;
+      return userToken === token_comment;
     },
     showEditForm(commentId) {
       this.editFormsVisibility[commentId] = true;
@@ -214,7 +213,7 @@ export default {
       try {
         const userToken = localStorage.getItem('authToken');
         if (userToken) {
-         const response =  await axios.post(
+          const response = await axios.post(
               `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/create_reply/${commentId}/`,
               {body: this.replies[commentId]},
               {
@@ -223,8 +222,8 @@ export default {
                 }
               }
           );
-         let idReply = response.data.id;
-         const response2 = await axios.get(
+          let idReply = response.data.id;
+          const response2 = await axios.get(
               `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/${idReply}/`,
               {body: this.replies[commentId]},
               {
@@ -233,10 +232,10 @@ export default {
                 }
               }
           );
-         this.replies[commentId] = ''
+          this.replies[commentId] = ''
           this.currentComment = response2.data
           this.replyFormsVisibility[commentId] = false;
-       }
+        }
       } catch
           (error) {
         console.error('Error adding reply:', error);
@@ -257,8 +256,8 @@ export default {
             }
           }
       )
-      this.vots = response.data;
-      for (let vot of this.vots) {
+      let vots = response.data;
+      for (let vot of vots) {
         if (vot.comment_id === this.comment.id) {
           this.eslike = vot.type === 'like';
           return true;
@@ -274,9 +273,18 @@ export default {
           window.location.reload();
         }
         //MIRAR SI L'USUARI JA HA VOTAT
+        let response = await axios.get(`${this.api}/comments/vots/`,
+            {
+              headers: {
+                Authorization: `${userToken}`
+              }
+            }
+        )
+
+        let vots = response.data;
         let votat = false;
         let like = false;
-        this.vots.forEach(vot => {
+        vots.forEach(vot => {
           if (vot.comment_id === this.comment.id) {
             votat = true;
             like = vot.type === 'like';
@@ -285,15 +293,17 @@ export default {
 
         if (tipus === 'like') {
           if (votat && like) {
-            await axios.delete(
+            response = await axios.delete(
                 `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
                 {
                   headers: {
                     Authorization: `${userToken}`
                   }
                 });
+            --this.currentComment.num_likes
+            this.votat = false;
           } else {
-            await axios.post(
+            response = await axios.post(
                 `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
                 {},
                 {
@@ -302,18 +312,24 @@ export default {
                   }
                 }
             );
+            ++this.currentComment.num_likes
+            if (votat) --this.currentComment.num_dislikes
+            else this.votat = true;
+            this.eslike = true;
           }
         } else if (tipus === 'dislike') {
           if (votat && !like) {
-            await axios.delete(
+            response = await axios.delete(
                 `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
                 {
                   headers: {
                     Authorization: `${userToken}`
                   }
                 });
+            --this.currentComment.num_dislikes
+            this.votat = false;
           } else {
-            await axios.post(
+            response = await axios.post(
                 `https://bravo13-36a68ba47d34.herokuapp.com/api/comments/vote/${this.comment.id}/${tipus}/`,
                 {},
                 {
@@ -322,23 +338,51 @@ export default {
                   }
                 }
             );
+            ++this.currentComment.num_dislikes
+            if (votat) --this.currentComment.num_likes
+            else this.votat = true;
+            this.eslike = false;
           }
         }
-        window.location.reload();
+        this.$emit('voted');
       } catch (error) {
         console.error('Error sending vote:', error);
       }
     },
     async confirmAndDelete() {
       if (this.isDeleting) {
-        return; // if a delete request is already in progress, do nothing
+        return;
       }
 
-      if (confirm('Are you sure you want to delete this comment?')) {
-        this.isDeleting = true; // disable the delete button
-        console.log('Deleting comment');
+      if (confirm('Segur que vols esborrar el comentari?')) {
+        this.isDeleting = true;
         this.$emit('eliminarComment', this.comment.id);
-        this.isDeleting = false; // re-enable the delete button once the request has completed
+        this.isDeleting = false;
+      }
+    },
+    async editComment() {
+      try {
+        const userToken = localStorage.getItem('authToken');
+        if (userToken) {
+          this.isEditing = true;
+          const response = await axios.put(
+              `${this.api}/comments/${this.comment.id}/`,
+              {body: this.localCommentBody},
+              {
+                headers: {
+                  Authorization: `${userToken}`
+                }
+              }
+          );
+
+          this.currentComment.body = response.data.body;
+          this.currentComment.last_edited = response.data.last_edited;
+          this.editFormsVisibility[this.comment.id] = false;
+          this.isEditing = false;
+        }
+      } catch (error) {
+        console.error('Error editing comment:', error);
+        this.isEditing = false;
       }
     },
   }

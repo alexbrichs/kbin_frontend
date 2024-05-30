@@ -52,7 +52,7 @@
                        data-controller="subject-list comments-wrap"
                        data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
                 <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"
-                              @newReplyAdded="updateComment" @eliminarComment="eliminarComment"/>
+                              @eliminarComment="eliminarComment" @voted="haVotat"/>
               </section>
             </div>
           </main>
@@ -149,20 +149,6 @@ export default {
         this.comments.push(newComment);
       }
     },
-    newReplyAdded(updatedComment, commentId) {
-      this.updateComment(this.comments, updatedComment, commentId);
-      this.commentsUpdated = !this.commentsUpdated;
-    },
-    updateComment(comments, updatedComment, commentId) {
-      for (let i = 0; i < comments.length; i++) {
-        if (comments[i].id === commentId) {
-          this.$set(comments, i, updatedComment);
-        }
-        if (comments[i].replies && comments[i].replies.length > 0) {
-          this.updateComment(comments[i].replies, updatedComment, commentId);
-        }
-      }
-    },
     async eliminarComment(commentId) {
       try {
         const userToken = localStorage.getItem('authToken');
@@ -191,6 +177,11 @@ export default {
         }
       }
     },
+    haVotat() {
+      if (this.ordre === 'top') {
+        this.getComments();
+      }
+    }
   }
 };
 </script>
