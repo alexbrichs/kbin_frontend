@@ -57,15 +57,16 @@
                     <li>
                       <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
                               @click="ImpulsarPublicacio(thread.id)">
-                        <p :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
+                        <span
+                            :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
                           {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
-                        </p>
+                        </span>
                       </button>
                     </li>
 
                     <template v-if="postMeu">
                       <li>
-                        <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
+                        <form :action="`/editar/publicacio/${thread.id}/`" name="edit_thread" method="get">
                           <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
                           </button>
                         </form>
@@ -82,6 +83,12 @@
                   </div>
                 </footer>
               </article>
+              <div v-if="thread.url && edited" class="alert alert__success" role="alert">
+                The link has been successfully edited.
+              </div>
+              <div v-else-if="!thread.url && edited" class="alert alert__success" role="alert">
+                The Thread has been successfully edited.
+              </div>
               <div id="comment-add" class="section">
                 <h3 hidden="">Añadir un comentario</h3>
                 <form name="entry_comment" method="post" action=""
@@ -127,7 +134,12 @@ import ShowComments from "@/components/ShowComments.vue";
 export default {
   name: 'ShowDetallThread',
   components: {ShowComments, BarraBase},
-  props: ['id'],
+  props: {
+    id: {
+      type: Number,
+      required: true
+    }
+  },
   data() {
     return {
       magazineName: '',
@@ -142,10 +154,17 @@ export default {
       upvotedColor: '#0f5132',
       downvotedColor: '#842029',
       totcarregat: false,
+      edited: false,
     }
   },
   mounted() {
     this.getComments();
+    if (localStorage.getItem('edited') === 'true') {
+        this.edited = true;
+        localStorage.removeItem('edited');
+      }
+    console.log("edited mounted")
+    console.log(this.edited)
   },
   async created() {
     try {
@@ -157,6 +176,9 @@ export default {
       this.boosted = await this.esboosted();
       this.votat = await this.esvotat();
       this.totcarregat = true;
+
+      console.log("edited created")
+    console.log(this.edited)
     } catch (error) {
       console.error('Error al obtener los detalles del hilo:', error);
     }

@@ -44,17 +44,17 @@
         <li>
           <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
                   @click="ImpulsarPublicacio(thread.id)">
-
-            <p :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
-              {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
-            </p>
+          <span :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
+            {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
+          </span>
           </button>
+
 
         </li>
 
         <template v-if="postMeu">
           <li>
-            <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
+            <form :action="`/editar/publicacio/${thread.id}/`" name="edit_thread" method="get">
               <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
               </button>
             </form>
@@ -140,6 +140,7 @@ export default {
     },
     async getMagazineName(magazineId) {
       try {
+        console.log(magazineId)
         const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/magazine/${magazineId}`);
         this.magazineName = response.data.name;
       } catch (error) {
@@ -161,7 +162,6 @@ export default {
             }
         )
       } else {
-        console.log(userToken)
         await axios.post(`${this.api}/publicacions/boost/${id}/`,
             {},
             {
@@ -256,20 +256,20 @@ export default {
           }
       );
       localStorage.setItem('eliminat', 'true');
-      window.location.reload();
+      this.$router.push('/')
     },
     async espublicaciomeva() {
       const userToken = localStorage.getItem('authToken');
       if (userToken === null) return false;
       const response = await axios.get(
-          `${this.api}/u/${this.thread.author}/threads/newest/threads/`,
+          `${this.api}/u/${this.thread.author}/`,
           {
             headers: {
               Authorization: `${userToken}`
             }
           }
       );
-      const token_thread = response.data.user.token;
+      const token_thread = response.data.token;
       return userToken === token_thread;
     },
     async esvotat() {
