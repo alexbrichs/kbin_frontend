@@ -18,7 +18,7 @@
                         <span>{{ magazine.n_suscriptions }}</span>
                       </div>
                       <div>
-                        Created: {{ magazine.creation_date }}
+                        Created: {{ formatejarData(magazine.creation_date) }}
                         <br>
                         <div style="display: block;">
                           Owner: <a :href="`/u/${this.magazine.author}/`">{{ magazine.author }}</a>
@@ -129,6 +129,27 @@ export default {
         console.error('Error fetching threads:', error);
       }
     },
+    formatejarData(inputDate) {
+    const months = [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    const date = new Date(inputDate);
+    const month = months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    let hour = date.getHours();
+    const minute = date.getMinutes();
+    const period = (hour >= 12) ? "p.m." : "a.m.";
+
+    if (hour > 12) {
+        hour -= 12;
+    }
+
+    return `${month} ${day}, ${year}, ${hour}:${minute < 10 ? '0' + minute : minute} ${period}`;
+}
+
   },
 }
 </script>

@@ -57,12 +57,14 @@
 </template>
 
 <script>
+import axios from "axios";
 export default {
   name: 'BarraBase',
   data() {
     return {
       selectedUser: localStorage.getItem('selectedUser') || 'NoUser',
-      actiu: 'threads'
+      actiu: 'threads',
+      api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
     };
   },
   mounted() {
@@ -97,7 +99,7 @@ export default {
     }
   },
   methods: {
-    updateDocument() {
+    async updateDocument() {
       // Titol document segons ruta actual
       if (this.$route && this.$route.path) {
         if (this.$route.path === '/' || this.$route.path.startsWith('/top') || this.$route.path.startsWith('/newest')
@@ -122,7 +124,12 @@ export default {
           document.title = `Overview - ${username}   - kbin.social`;
         } else if (this.$route.path.startsWith('/newMagazine')) {
           document.title = `Create new magazine - kbin.social`;
+        } else if (this.$route.path.startsWith('/magazine/')) {
+          const {id} = this.$route.params;
+          const response = await axios.get(`${this.api}/magazine/${id}/`);
+          document.title = `${response.data.name} - kbin.social`;
         }
+
       }
     },
     logout() {
