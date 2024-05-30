@@ -236,7 +236,6 @@ export default {
             if (votat) --this.currentThread.num_dislikes
             else this.votat = true;
             this.eslike = true;
-
           }
         } else if (tipus === 'dislike') {
           if (votat && !like) {
@@ -265,6 +264,7 @@ export default {
             this.eslike = false;
           }
         }
+        this.$emit('voted')
         // window.location.reload();
       } catch (error) {
         console.error('Error al enviar el voto:', error);
