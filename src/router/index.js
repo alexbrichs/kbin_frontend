@@ -48,7 +48,7 @@ const routes = [
 const user_routes = [
     {
         path: '/u/:username/',
-        name: 'UserProfile',
+        name: 'UserProfile0',
         component: UserProfile,
         props: true
     },
@@ -60,34 +60,30 @@ const user_routes = [
         props: true
     },
     {
-        path: '/u/:username/commented/',
+        path: '/u/:username/comments/',
         name: 'UserProfile2',
         component: UserProfile,
-        props: true
+        props: (route) => ({ username: route.params.username, activeSelected: 'comments' })
     },
+    // Veure comentaris
     {
-        path: '/u/:username/commented/:activeOption/:activeFilter/',
+        path: '/u/:username/comments/:activeOption/:activeFilter/',
         name: 'UserProfile3',
         component: UserProfile,
-        props: true
+        props: (route) => ({ username: route.params.username, activeSelected: 'comments' })
     },
+    // Veure boosts
     {
         path: '/u/:username/boosts/',
         name: 'UserProfile4',
         component: UserProfile,
-        props: true
+        props: (route) => ({ username: route.params.username, activeSelected: 'boosts' })
     },
     {
         path: '/u/:username/boosts/:activeOption/:activeFilter/',
         name: 'UserProfile5',
         component: UserProfile,
-        props: true
-    },
-    {
-        path: '/u/:username/:selected/:activeOption/:activeFilter/',
-        name: 'UserProfile5',
-        component: UserProfile,
-        props: true
+        props: (route) => ({ username: route.params.username, activeSelected: 'boosts' })
     },
 ]
 

@@ -105,19 +105,19 @@
               </a>
             </li>
             <li>
-              <a :class="{ 'active': selected === 'commented' }" :href="`/u/${user.username}/commented`">
+              <a :class="{ 'active': selected === 'comments' }" :href="`/u/${user.username}/comments`">
                 <span style="vertical-align: inherit;">comments ({{ user.total_comments }})</span>
               </a>
             </li>
             <li v-if="user.token !== null">
-              <a :class="{ 'active': selected === 'boost' }" :href="`/u/${user.username}/boosts`">
+              <a :class="{ 'active': selected === 'boosts' }" :href="`/u/${user.username}/boosts`">
                 <span style="vertical-align: inherit;">boosts ({{ user.total_boosts }})</span>
               </a>
             </li>
           </menu>
         </aside>
 
-        <aside v-if="selected !== 'commented'" class="options options--top" id="options"
+        <aside v-if="selected !== 'comments'" class="options options--top" id="options"
                style="align-items: center; justify-content: center;">
           <div></div>
           <menu class="options__main no-scroll">
@@ -132,7 +132,7 @@
               </a>
             </li>
             <li>
-              <a :class="{ 'active': active_option === 'com' }" :href="`/u/${user.username}/${selected !== 'threads' ? 'boosts/' : ''}com/${active_filter}`">
+              <a :class="{ 'active': active_option === 'commented' }" :href="`/u/${user.username}/${selected !== 'threads' ? 'boosts/' : ''}commented/${active_filter}`">
                 <font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> commented </font></font>
               </a>
             </li>
@@ -155,17 +155,17 @@
           <div></div>
           <menu class="options__main no-scroll">
             <li>
-              <a :class="{ 'active': active_option === 'top' }" :href="`/u/${user.username}/commented/top/${active_filter}`">
+              <a :class="{ 'active': active_option === 'top' }" :href="`/u/${user.username}/comments/top/${active_filter}`">
                 <font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> top </font></font>
               </a>
             </li>
             <li>
-              <a :class="{ 'active': active_option === 'newest' }" :href="`/u/${user.username}/commented/newest/${active_filter}`">
+              <a :class="{ 'active': active_option === 'newest' }" :href="`/u/${user.username}/comments/newest/${active_filter}`">
                 <font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> newest </font></font>
               </a>
             </li>
             <li>
-              <a :class="{ 'active': active_option === 'com' }" :href="`/u/${user.username}/commented/com/${active_filter}`">
+              <a :class="{ 'active': active_option === 'commented' }" :href="`/u/${user.username}/comments/commented/${active_filter}`">
                 <font style="vertical-align: inherit;"><font style="vertical-align: inherit;"> commented </font></font>
               </a>
             </li>
@@ -173,7 +173,7 @@
         </aside>
 
         <div id="content" class="overview subjects comments-tree comments show-comment-avatar show-post-avatar">
-          <template v-if="selected !== 'com'">
+          <template v-if="selected !== 'comments'">
             <div>
               <ShowThreads v-for="thread in data" :key="thread.id" :thread="thread"/>
             </div>
@@ -203,31 +203,30 @@ export default {
     ShowThreads,
     ShowComments,
   },
-  props: ['username'],
+  props: ['username', 'activeSelected', 'activeOption', 'activeFilter'],
   data() {
     return {
       user: {},
       data: {},
       actiu: '',
-      selected: 'threads',
-      active_filter: 'tot',
-      active_option: 'newest'
+      selected: this.activeSelected || 'threads', // Valor por defecto
+      active_filter: 'tot', // Valor por defecto
+      active_option: 'newest' // Valor por defecto
     };
   },
   mounted() {
-    const {selected, activeFilter, activeOption} = this.$route.params;
+    const {activeFilter, activeOption} = this.$route.params;
+
+    // console.log(activeFilter);
+    // console.log(activeOption);
     if (activeFilter) {
       this.active_filter = activeFilter;
     }
     if (activeOption) {
       this.active_option = activeOption;
     }
-    if (selected) {
-      this.selected = selected;
-    }
-    console.log(this.selected);
-    console.log(this.active_filter);
-    console.log(this.active_option);
+    // console.log(this.active_filter);
+    // console.log(this.active_option);
     this.fetchUser();
   },
   methods: {
