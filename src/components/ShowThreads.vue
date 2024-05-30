@@ -44,11 +44,11 @@
         <li>
           <button class="boost-link stretched-link" type="submit" data-action="subject#favourite"
                   @click="ImpulsarPublicacio(thread.id)">
-
-            <p :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
-              {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
-            </p>
+          <span :style="{ color: boosted ? 'green' : 'inherit', fontWeight: boosted ? 'bold' : 'normal' }">
+            {{ thread.num_boosts > 0 ? 'boost (' + thread.num_boosts + ')' : 'boost' }}
+          </span>
           </button>
+
 
         </li>
 
@@ -97,8 +97,6 @@ export default {
     }
   },
   async created() {
-    console.log("info thread")
-    console.log(this.thread);
     this.getMagazineName(this.thread.magazine);
     this.postMeu = await this.espublicaciomeva();
     this.boosted = await this.esboosted();
