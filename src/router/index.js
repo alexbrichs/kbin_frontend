@@ -3,6 +3,7 @@ import HomePage from '../components/HomePage.vue'
 import ShowDetallThread from "@/components/ShowDetallThread.vue";
 import CercadorThreads from "@/components/CercadorThreads.vue";
 import UserProfile from "../components/UserProfile.vue";
+import UserEdit from "@/components/UserEdit.vue";
 import CrearThread from "@/components/CrearThread.vue";
 import EditarPublicacio from "@/components/EditarPublicacio.vue";
 import '/public/assets/css/app.910c0aab.css';
@@ -114,6 +115,12 @@ const user_routes = [
         name: 'UserProfile5',
         component: UserProfile,
         props: (route) => ({ username: route.params.username, activeSelected: 'boosts' })
+    },
+    {
+        path: '/kbin/settings/profile/:username/',
+        name: 'UserEdit',
+        component: UserEdit,
+        props: true
     },
 ]
 
