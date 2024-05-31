@@ -59,12 +59,9 @@
     </div>
   </BarraBase>
 </template>
-
-
 <script>
 import BarraBase from "@/components/BarraBase.vue";
 import axios from "axios";
-
 export default {
   name: 'LlistarMagazines',
   components: {BarraBase},
@@ -82,8 +79,6 @@ export default {
     }
     this.fetchMagazines();
     this.fetchUserSubscriptions();
-
-
   },
   methods: {
     async fetchMagazines() {
@@ -117,11 +112,9 @@ export default {
         console.error(error);
       }
     },
-
     isSubscribed(magazineId) {
       return this.userSubscriptions.some(sub => sub.magazine === magazineId);
     },
-
     async handleSubscription(magazineId) {
       console.log(`Handle subscription for magazine ID: ${magazineId}`);
       if (this.isSubscribed(magazineId)) {
@@ -133,13 +126,14 @@ export default {
       }
       this.fetchUserSubscriptions(); // Refresh the subscriptions after the change
     },
-
     async subscribeUrl(id) {
       try {
         // Obtener el token del localStorage
         const userToken = localStorage.getItem('authToken');
         if (!userToken) {
-          throw new Error('No se encontró el token del usuario en el localStorage');
+          localStorage.setItem('NoLoguejat', 'true');
+          this.$router.push('/')
+          return;
         }
         const response = await axios.post(
             `https://bravo13-36a68ba47d34.herokuapp.com/api/suscriptions/${id}/`,
@@ -156,7 +150,6 @@ export default {
         console.error('Error al enviar la suscripcio:', error);
       }
     },
-
    async unsubscribeUrl(id) {
      try {
         // Obtener el token del localStorage
@@ -179,7 +172,5 @@ export default {
       }
     }
     },
-
-
 }
 </script>

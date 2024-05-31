@@ -16,13 +16,13 @@
               </form>
             </div>
           </div>
-          <template v-if="keyword !== '' && keyword !== null">
+          <template v-if="keyword !== '' && keyword !== null && Carregat">
             <aside class="options options--top" id="options">
               <div></div>
               <menu class="options__main no-scroll">
-                <li><a class="" href="/cercador/top/tot?keyword=asdf">Top</a></li>
-                <li><a class="active" href="/cercador/newest/tot?keyword=asdf">Newest</a></li>
-                <li><a class="" href="/cercador/commented/tot?keyword=asdf">Commented</a></li>
+                <li><a :class="{ active: activeOption === 'top' }" :href="'/cercador/top/' + activeFilter + '/' + (keyword !== '' ? '?keyword=' + keyword : '')">Top</a></li>
+                <li><a :class="{ active: activeOption === 'newest' }" :href="'/cercador/newest/' + activeFilter + '/' + (keyword !== '' ? '?keyword=' + keyword : '')">Newest</a></li>
+                <li><a :class="{ active: activeOption === 'commented' }" :href="'/cercador/commented/' + activeFilter + '/' + (keyword !== '' ? '?keyword=' + keyword : '')">Commented</a></li>
               </menu>
               <menu class="options__filters">
                 <li class="dropdown">
@@ -30,28 +30,29 @@
                     <i class="fa-solid fa-filter"></i>Filter by type
                   </button>
                   <ul class="dropdown__menu">
-                    <li><a href="/cercador/newest/tot?keyword=" :class="{ active: activeFilter === 'tot' }">Tot</a></li>
-                    <!--                    <li>-->
-                    <!--                      <a :href="'/cercador/?activeFilter=links&activeOption=' + activeOption + '&keyword=' + keyword + '&Cercat=' + Cercat"-->
-                    <!--                         :class="{ active: activeFilter === 'links' }">Links</a>-->
-                    <!--                    </li>-->
+                    <li><a :class="{ active: activeFilter === 'tot'}"
+                           :href="'/cercador/' + activeOption + '/tot/' + (keyword !== '' ? '?keyword=' + keyword : '')" >Tot</a></li>
                     <li>
-                      <a :href="'/cercador/' + activeOption + '/links/' + (keyword !== '' ? '?keyword=' + keyword : '')">Links</a>
+                      <a :class="{ active: activeFilter === 'links'}"
+                          :href="'/cercador/' + activeOption + '/links/' + (keyword !== '' ? '?keyword=' + keyword : '')">Links</a>
                     </li>
-                    <li><a href="/cercador/newest/tot?keyword=" :class="{ active: activeFilter === 'threads' }">Tot</a>
+                    <li>
+                      <a :class="{ active: activeFilter === 'threads'}"
+                          :href="'/cercador/' + activeOption + '/threads/' + (keyword !== '' ? '?keyword=' + keyword : '')">Threads</a>
                     </li>
                   </ul>
                 </li>
               </menu>
             </aside>
-            <div v-if="threads === null || threads.length > 0" id="content">
-              <ShowThreads v-for="thread in threads" :key="thread.id" :thread="thread"/>
-            </div>
-            <div v-else id="content" class="overview subjects comments-tree comments show-post-avatar">
+            <div v-if="threads === null || threads.length === 0" id="content" class="overview subjects comments-tree comments show-post-avatar">
               <aside class="section section--muted">
                 <p>Empty</p>
               </aside>
             </div>
+            <div v-else id="content">
+              <ShowThreads v-for="thread in threads" :key="thread.id" :thread="thread"/>
+            </div>
+
           </template>
         </main>
       </div>
@@ -77,11 +78,11 @@ export default {
       activeFilter: 'tot',      // Valor inicial predeterminado
       keyword: null,
       threads: null,
-      Cercat: false,
+      Carregat: false,
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
     }
   },
-  mounted() {
+  async   mounted() {
     const {activeFilter, activeOption} = this.$route.params;
     const params = new URLSearchParams(window.location.search);
     // const activeFilterParam = params.get('activeFilter');
@@ -95,8 +96,8 @@ export default {
     if (keyword) {
       this.keyword = keyword;
     }
-    this.Cercador(this.keyword);
-    console.log(this.threads)
+    await this.Cercador(this.keyword);
+    this.Carregat = true;
   },
   watch: {},
   methods: {
@@ -119,6 +120,7 @@ export default {
                 }
               });
           this.threads = response.data;
+
         } else if (this.activeFilter === 'threads') {
           const response = await axios.get(
               `${this.api}/cercador/threads/${this.activeOption}/`,
@@ -138,6 +140,7 @@ export default {
               });
           this.threads = response.data;
         }
+        this.$router.push(`/cercador/${this.activeOption}/links/${this.keyword !== '' ? '?keyword=' + this.keyword : ''}`);
       }
     }
   }

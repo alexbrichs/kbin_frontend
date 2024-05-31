@@ -10,10 +10,8 @@
 
 <script>
 import BarraBase from "@/components/BarraBase.vue";
-
 import axios from "axios";
 import SectionMagazine from "@/components/SectionMagazine.vue";
-
 export default {
   name: 'LlistarMagazines',
   components: {BarraBase, SectionMagazine},
@@ -23,7 +21,6 @@ export default {
       totcarregat: false,
       id: null
     }
-
   },
   async mounted(){
     const {id} = this.$route.params;
@@ -32,7 +29,6 @@ export default {
     }
     console.log(this.id)
     await this.fetchMagazine(this.id);
-
     this.totcarregat = true;
   },
   methods: {
@@ -45,7 +41,6 @@ export default {
       }
       console.log(this.magazine);
     }
-
     }
 }
 </script>

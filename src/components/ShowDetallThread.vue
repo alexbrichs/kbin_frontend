@@ -1,197 +1,190 @@
 <template>
   <BarraBase v-model:actiu="actiu">
-    <div id="middle" class="page-entry-single">
-      <div class="kbin-container">
-        <main id="main" data-controller="lightbox timeago" class="">
-          <div id="content">
-            <article :class="articleClass">
-              <header>
-                <h1>
-                  <a rel="nofollow noopener noreferrer" :href="`/kbin/thread/${thread.id}/top/`">{{ thread.title }}</a>
-                  <span class="entry__domain" v-if="thread.url">
-          &nbsp;(<a :href="thread.url" target="_blank">{{ thread.url }}</a> )
-        </span>
-                </h1>
-              </header>
-              <div class="entry__body">
-                <div class="content formatted" style="">
-                  <p>{{ thread.body }}</p>
-                </div>
+    <template v-if="totcarregat">
+      <div id="middle" class="page-entry-single">
+        <div class="kbin-container">
+          <main id="main" data-controller="lightbox timeago" class="">
+            <div id="content">
+              <ShowThreads :key="thread.id" :thread="thread" :detallat=true></ShowThreads>
+              <div v-if="thread.url && edited" class="alert alert__success" role="alert">
+                The link has been successfully edited.
               </div>
-
-              <aside class="meta entry__meta">
-                <a class="user-inline" :href="`/u/${thread.author}`">{{ thread.author }}</a>
-                <time class="timeago" :datetime="thread.creation_date">&nbsp;{{
-                    tiempoDesdeCreacion(thread.creation_data)
-                  }}
-                </time>
-                <span> to </span>
-                <a :href="`/magazine/${thread.magazine}`" class="magazine-inline" title={{magazineName}}>{{
-                    magazineName
-                  }}</a>
-              </aside>
-              <aside class="vote">
-                <button @click="enviarVot('like')" title="Vots positius" aria-label="Vots positius">
-                  <span data-subject-target="favCounter">{{ thread.num_likes }}</span>
-                  <span>&nbsp;</span>
-                  <span><i class="fa-solid fa-arrow-up"></i></span>
-                </button>
-
-                <button @click="enviarVot('dislike')" title="Vots negatius" aria-label="Vots negatius">
-                  <span data-subject-target="favCounter">{{ thread.num_dislikes }}</span>
-                  <span>&nbsp;</span>
-                  <span><i class="fa-solid fa-arrow-down"></i></span>
-                </button>
-              </aside>
-              <footer>
-                <menu>
-                  <li>
-                    <a class="stretched-link" href="/kbin/thread/8/top/"><span
-                        data-subject-target="commentsCounter">{{ thread.num_coments }}</span>
-                      comments </a>
+              <div v-else-if="!thread.url && edited" class="alert alert__success" role="alert">
+                The Thread has been successfully edited.
+              </div>
+              <aside id="options" class="options options--top">
+                <menu class="options__main no-scroll">
+                  <li><a :class="{ 'active': ordre === 'top' }" :href="'/thread/' + thread.id + '/top/'">Top</a></li>
+                  <li><a :class="{ 'active': ordre === 'newest' }"
+                         :href="'/thread/' + thread.id + '/newest/'">Newest</a>
                   </li>
-                  <li>
-                    <form action="/kbin/boost/8/" name="boost_thread" method="post">
-                      <input type="hidden" name="next" value="/">
-                      <input type="hidden" name="keyword" value="">
-                      <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">boost
-                      </button>
-                    </form>
+                  <li><a :class="{ 'active': ordre === 'oldest' }"
+                         :href="'/thread/' + thread.id + '/oldest/'">Oldest</a>
                   </li>
-
-                  <template v-if="postMeu">
-                    <li>
-                      <form :action="`/kbin/editar/thread/${thread.id}/`" name="edit_thread" method="get">
-                        <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">edit
-                        </button>
-                      </form>
-                    </li>
-                    <li>
-                      <form :action="`/kbin/eliminar/${thread.id}/`" name="eliminar_publicacio" method="post">
-                        <button class="boost-link stretched-link" type="submit" data-action="subject#favourite">delete
-                        </button>
-                      </form>
-                    </li>
-                  </template>
-
-
                 </menu>
-                <div data-subject-target="container" class="js-container">
-                </div>
-              </footer>
-            </article>
-          </div>
-        </main>
+              </aside>
+              <div id="comment-add" class="section">
+                <h3 hidden="">Add a comment</h3>
+                <form name="entry_comment" method="post"
+                      class="comment-add" enctype="multipart/form-data" @submit.prevent="addComment">
+                  <div><label for="entry_comment_6616cdb65f3850.74137319_body"></label><textarea
+                      id="entry_comment_6616cdb65f3850.74137319_body" name="entry_comment[body]"
+                      data-controller="input-length rich-textarea autogrow"
+                      data-action="input-length#updateDisplay" data-input-length-max-value="5000"
+                      style="overflow: hidden; height: 66px;"
+                      v-model="newComment"></textarea>
+                  </div>
+                  <div class="row actions">
+                    <ul>
+                      <li class="dropdown">
+                        <div>
+                          <button type="submit" id="entry_comment_6616cdb65f3850.74137319_submit"
+                                  name="entry_comment[submit]" class="btn btn__primary"
+                                  data-action="subject#sendForm">Add comment
+                          </button>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </form>
+              </div>
+              <section id="comments" class="comments entry-comments comments-tree show-comment-avatar"
+                       data-controller="subject-list comments-wrap"
+                       data-action="notifications:EntryCommentCreatedNotification@window->subject-list#increaseCounter">
+                <ShowComments v-for="comment in comments" :key="comment.id" :comment="comment"
+                              @eliminarComment="eliminarComment" @voted="haVotat"/>
+              </section>
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </template>
   </BarraBase>
 </template>
 
 <script>
 import axios from 'axios';
 import BarraBase from "@/components/BarraBase.vue";
+import ShowComments from "@/components/ShowComments.vue";
+import ShowThreads from "@/components/ShowThreads.vue";
 
 export default {
   name: 'ShowDetallThread',
-  components: {BarraBase},
-  props: ['id'],
+  components: {ShowThreads, ShowComments, BarraBase},
+  props: {
+    id: {
+      type: Number,
+      required: true
+    },
+  },
   data() {
     return {
-      magazineName: '',
       api: 'https://bravo13-36a68ba47d34.herokuapp.com/api',
       thread: {},
-      postMeu: false
+      comments: [],
+      order: 'newest',
+      newComment: '',
+      totcarregat: false,
+      edited: false,
+      ordre: null
     }
+  },
+  mounted() {
+    if (localStorage.getItem('edited') === 'true') {
+      this.edited = true;
+      localStorage.removeItem('edited');
+    }
+    const {ordre} = this.$route.params;
+    if (ordre) {
+      this.ordre = ordre;
+    }
+    this.getComments();
   },
   async created() {
     try {
-      const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/${this.id}/`);
+      const response = await axios.get(`${this.api}/publicacions/${this.id}/`);
       this.thread = response.data;
-      await this.getMagazineName(this.thread.magazine);
       document.title = `${this.thread.title} - ${this.magazineName} - kbin.social`;
-      this.postMeu = await this.espublicaciomeva();
+      this.totcarregat = true;
     } catch (error) {
-      console.error('Error al obtener los detalles del hilo:', error);
-    }
-  },
-  computed: {
-    articleClass() {
-      return {
-        'entry section entry--single section --top': true,
-        'subject own': this.postMeu // Añadir la clase 'own' si es mi publicación
-      };
+      console.error('Error obtenint els threads:', error);
     }
   },
   methods: {
-    tiempoDesdeCreacion(creationDate) {
-      const now = new Date();
-      const diff = now - new Date(creationDate);
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-      if (days > 365) {
-        const years = Math.floor(days / 365);
-        return `${years} ${years === 1 ? 'year' : 'years'} ago`;
-      } else if (days > 30) {
-        const months = Math.floor(days / 30);
-        return `${months} ${months === 1 ? 'month' : 'months'} ago`;
-      } else if (days > 7) {
-        const weeks = Math.floor(days / 7);
-        return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-      } else if (days > 0) {
-        return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-      } else if (hours > 0) {
-        return `${hours} ${hours === 1 ? 'hour' : 'hours'} ago`;
-      } else if (minutes > 0) {
-        return `${minutes} ${minutes === 1 ? 'minute' : 'minutes'} ago`;
-      } else {
-        return 'Now';
-      }
-    },
-    async getMagazineName(magazineId) {
+    async getComments() {
       try {
-        const response = await axios.get(`https://bravo13-36a68ba47d34.herokuapp.com/api/magazine/${magazineId}`);
-        this.magazineName = response.data.name;
+        const response = await axios.get(`${this.api}/publicacions/${this.id}/comments/${this.ordre}`);
+        this.comments = response.data;
       } catch (error) {
-        console.error('Error fetching magazine:', error);
+        console.error('Error fetching comments:', error);
       }
     },
-    async enviarVot(tipus) {
+    async addComment() {
       try {
-        // Obtener el token del localStorage
         const userToken = localStorage.getItem('authToken');
-        if (!userToken) {
-          throw new Error('No se encontró el token del usuario en el localStorage');
-        }
+        if (userToken === null) {
+          localStorage.setItem('NoLoguejat', 'true');
+          this.$router.push('/')
+          return;
+        } else if (userToken) {
+          const response = await axios.post(
+              `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/${this.id}/create_comment/`,
+              {body: this.newComment},
+              {
+                headers: {
+                  Authorization: `${userToken}`
+                }
+              }
+          );
 
-        const response = await axios.post(
-            `https://bravo13-36a68ba47d34.herokuapp.com/api/publicacions/votar/${this.thread.id}/${tipus}/`,
-            {},
+          this.insertCommentInOrder(response.data);
+          this.newComment = '';
+          this.thread.num_coments += 1;
+        }
+      } catch
+          (error) {
+        console.error('Error adding comment:', error);
+      }
+    },
+    insertCommentInOrder(newComment) {
+      if (this.ordre === 'newest') {
+        this.comments.unshift(newComment);
+      } else {
+        this.comments.push(newComment);
+      }
+    },
+    async eliminarComment(commentId) {
+      try {
+        const userToken = localStorage.getItem('authToken');
+        await axios.delete(
+            `${this.api}/comments/${commentId}/`,
             {
               headers: {
                 Authorization: `${userToken}`
               }
             }
         );
-        console.log('Voto enviado correctamente:', response.data);
-        window.location.reload();
+        this.eliminarReply(this.comments, commentId);
       } catch (error) {
-        console.error('Error al enviar el voto:', error);
+        console.error('Error deleting comment:', error);
       }
     },
-    async espublicaciomeva() {
-      const userToken = localStorage.getItem('authToken');
-      const response = await axios.get(
-          `${this.api}/u/${this.thread.author}/threads/newest/threads/`,
-          {
-            headers: {
-              Authorization: `${userToken}`
-            }
-          }
-      );
-      const token_thread = response.data.user.token;
-      return userToken === token_thread;
+    eliminarReply(comments, replyId) {
+      for (let i = 0; i < comments.length; i++) {
+        if (comments[i].id === replyId) {
+          this.thread.num_coments -= (1 + comments[i].replies.length);
+          comments.splice(i, 1);
+          return;
+        }
+        if (comments[i].replies && comments[i].replies.length > 0) {
+          this.eliminarReply(comments[i].replies, replyId);
+        }
+      }
+    },
+    haVotat() {
+      if (this.ordre === 'top') {
+        this.getComments();
+      }
     }
   }
 };
