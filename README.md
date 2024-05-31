@@ -1,24 +1,10 @@
-# kbin-frontend
+# projecte_asw
+Membres de l'equip bravo13:
+- Joan Mariñoso (joan.marinoso@estudiantat.upc.edu)
+- Marc Expósito (marc.exposito.francisco@estudiantat.upc.edu)
+- Daniel Cañizares (daniel.canizares@estudiantat.upc.edu)
+- Alex Brichs (alex.brichs@estudiantat.upc.edu)
 
-## Project setup
-```
-npm install
-```
+Link al Taiga: https://tree.taiga.io/project/danielcanizares-bravo13-asw/timeline
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+Link a l'aplicació desplegada a Heroku: https://kbin-frontend-2c0c17ed7b02.herokuapp.com/
