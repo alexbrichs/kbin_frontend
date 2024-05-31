@@ -5,8 +5,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Define dirname for ES modules
-const currentFileUrl = new URL(require.main.filename);
-const filename = fileURLToPath(currentFileUrl);
+const mainModulePath = require.resolve(process.argv[1]);
+const __filename = fileURLToPath(mainModulePath);
 const dirname = path.dirname(filename);
 
 // Serve static files from the dist directory
