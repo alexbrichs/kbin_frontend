@@ -1,10 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
-  transpileDependencies: true,
-  devServer: {
-  compress: true,
-  allowedHosts: [
-      'https://kbin-frontend-2c0c17ed7b02.herokuapp.com/'
-  ]
-},
+    transpileDependencies: true,
+    devServer: {
+        allowedHosts: "all"
+    }
 })
