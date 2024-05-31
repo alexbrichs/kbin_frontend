@@ -1,4 +1,3 @@
-
 const { fileURLToPath } = require('url');
 const express = require('express');
 const path = require('path');
@@ -6,7 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Define dirname for ES modules
-const filename = fileURLToPath(import.meta.url);
+const filename = fileURLToPath(require('url').pathToFileURL(filename));
 const dirname = path.dirname(filename);
 
 // Serve static files from the dist directory
