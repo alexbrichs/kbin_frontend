@@ -2,12 +2,11 @@
   "name": "kbin-frontend",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "start": "node server.js",
+   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "start": "node server.js"
   },
   "dependencies": {
     "@babel/core": "^7.12.16",
@@ -21,7 +20,9 @@
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "express": "^4.19.2",
+    "path": "^0.12.7",
     "serve-static": "^1.15.0",
+    "url": "^0.11.3",
     "vue": "^3.2.13",
     "vue-router": "^4.3.2"
   },
