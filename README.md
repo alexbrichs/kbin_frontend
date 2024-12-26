@@ -1,5 +1,5 @@
 # kbin_frontend
-Membres de l'equip bravo13:
+Team members:
 - Joan Mariñoso (joan.marinoso@estudiantat.upc.edu)
 - Marc Expósito (marc.exposito.francisco@estudiantat.upc.edu)
 - Daniel Cañizares (daniel.canizares@estudiantat.upc.edu)
